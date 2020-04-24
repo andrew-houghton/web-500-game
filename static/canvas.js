@@ -1,31 +1,41 @@
-var canvas = document.querySelector('canvas');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-var ctx = canvas.getContext('2d');
-
 // TODO:
 // Display a card
 // Display a hand
 // Display 5 hands
 // Play a card from each hand
+document.addEventListener("DOMContentLoaded", function() {
+    var cards = document.getElementById("card_container");
 
-function draw(img, x, y, width, height, rotation){
-    ctx.save();
-    ctx.rotate(Math.PI * rotation);
-    ctx.drawImage(img, x, y);
-    ctx.restore();
-}
-
-function draw_hand(cards, x, y, direction){
-    for (let i = 0; i < cards.length; i++) {
-        console.log("drawing card "+i);
-        console.log(card_data[cards[i]].length)
-        img = new Image();
-        img.src = "data:image/png;base64,"+card_data[cards[i]];
-        draw(img, 140+20*i, 160+80*i, 50, 50, 0.03*i);
+    function draw(img, x, y, rotation) {
+        cards.appendChild(img);
+        img.setAttribute("style", "transform: rotate(" + rotation + "deg)")
+        img.style.left = x + 'px';
+        img.style.top = y + 'px';
     }
-}
 
-document.addEventListener("DOMContentLoaded", function(){
-    draw_hand(['club_6', 'club_5', 'club_3', 'club_2'], 200,200,0);
+    function draw_hand(cards, x, y, direction) {
+        for (let i = 0; i < cards.length; i++) {
+            img = new Image();
+            img.src = "data:image/png;base64," + card_data[cards[i]];
+            console.log(x + i * 40, y, direction)
+            draw(img, x + i * 40, y, direction);
+        }
+    }
+
+    hand_locations = [
+        [0.5, 0.8, 0],
+        [0.1, 0.4, 90],
+        [0.3, 0.1, 180],
+        [0.7, 0.1, 180],
+        [0.9, 0.4, 270],
+    ]
+
+    for (let i = 0; i < hand_locations.length; i++) {
+        draw_hand(
+            ['club_6', 'club_5'],
+            hand_locations[i][0] * window.innerWidth,
+            hand_locations[i][1] * window.innerHeight,
+            hand_locations[i][2],
+        );
+    }
 });
