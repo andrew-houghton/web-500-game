@@ -7,7 +7,7 @@ import json
 image_base64 = {}
 for filename in os.listdir('static/cards'):
     image = Image.open(f'static/cards/{filename}')
-    image = image.resize((image.size[0]//2,image.size[1]//2), Image.ANTIALIAS)
+    image = image.resize((image.size[0]//3,image.size[1]//3), Image.ANTIALIAS)
     buffered = BytesIO()
     image.save(buffered, format="PNG")
     image_base64[filename.replace('.png', '')] = str(base64.b64encode(buffered.getvalue()))

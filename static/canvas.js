@@ -1,41 +1,41 @@
-// TODO:
-// Display a card
-// Display a hand
-// Display 5 hands
-// Play a card from each hand
+const cardWidth = 112;
+const cardHeight = 163;
+
 document.addEventListener("DOMContentLoaded", function() {
     var cards = document.getElementById("card_container");
 
     function draw(img, x, y, rotation) {
-        cards.appendChild(img);
         img.setAttribute("style", "transform: rotate(" + rotation + "deg)")
-        img.style.left = x + 'px';
-        img.style.top = y + 'px';
+        cards.appendChild(img);
+        img.style.left = (x-cardWidth/2) + 'px';
+        img.style.top = (y-cardHeight/2) + 'px';
     }
 
-    function draw_hand(cards, x, y, direction) {
+    function drawHand(cards, x, y, direction) {
+        console.log("Drawing hand at ", x, y, direction)
         for (let i = 0; i < cards.length; i++) {
-            img = new Image();
-            img.src = "data:image/png;base64," + card_data[cards[i]];
-            console.log(x + i * 40, y, direction)
-            draw(img, x + i * 40, y, direction);
+            var img = new Image();
+            img.addEventListener('load', function() {
+                draw(img, x, y, direction);
+            });
+            img.src = "data:image/png;base64," + cardData[cards[i]];
         }
     }
 
-    hand_locations = [
-        [0.5, 0.8, 0],
+    handLocations = [
+        // [0.5, 0.9, 0],
         [0.1, 0.4, 90],
-        [0.3, 0.1, 180],
-        [0.7, 0.1, 180],
-        [0.9, 0.4, 270],
+        // [0.3, 0.1, 180],
+        // [0.7, 0.1, 180],
+        // [0.9, 0.4, 270],
     ]
 
-    for (let i = 0; i < hand_locations.length; i++) {
-        draw_hand(
-            ['club_6', 'club_5'],
-            hand_locations[i][0] * window.innerWidth,
-            hand_locations[i][1] * window.innerHeight,
-            hand_locations[i][2],
+    for (let i = 0; i < handLocations.length; i++) {
+        drawHand(
+            ['club_6'],
+            handLocations[i][0] * window.innerWidth,
+            handLocations[i][1] * window.innerHeight,
+            handLocations[i][2],
         );
     }
 });
