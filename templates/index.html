@@ -5,62 +5,81 @@
     <title>500 Game</title>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="static/styles.css">
+    <script src="static/libs/socket.io.js"></script>
 </head>
 
 <body>
-    <button onclick="giveKitty()">Kitty</button>
-    <div id="cardContainer"></div>
-    <script src="static/cardData.js"></script>
-    <script src="static/canvas.js"></script>
-
-    <span id="playerBidText">
-        <div id="player0Bid"></div>
-        <div id="player1Bid"></div>
-        <div id="player2Bid"></div>
-        <div id="player3Bid"></div>
-        <div id="player4Bid"></div>
-    </span>
-
-    <div id="bid_section">
-        <button id="bid_pass">Pass</button>
-
-        <table>
-            <tr>
-                <td><button id="bid_button-6s">6 S</button></td>
-                <td><button id="bid_button-6s">6 C</button></td>
-                <td><button id="bid_button-6s">6 D</button></td>
-                <td><button id="bid_button-6h">6 H</button></td>
-                <td><button id="bid_button-6nt">6 NT</button></td>
-            </tr>
-            <tr>
-                <td><button id="bid_button-7s">7 S</button></td>
-                <td><button id="bid_button-7s">7 C</button></td>
-                <td><button id="bid_button-7s">7 D</button></td>
-                <td><button id="bid_button-7h">7 H</button></td>
-                <td><button id="bid_button-7nt">7 NT</button></td>
-            </tr>
-            <tr>
-                <td><button id="bid_button-8s">8 S</button></td>
-                <td><button id="bid_button-8s">8 C</button></td>
-                <td><button id="bid_button-8s">8 D</button></td>
-                <td><button id="bid_button-8h">8 H</button></td>
-                <td><button id="bid_button-8nt">8 NT</button></td>
-            </tr>
-            <tr>
-                <td><button id="bid_button-9s">9 S</button></td>
-                <td><button id="bid_button-9s">9 C</button></td>
-                <td><button id="bid_button-9s">9 D</button></td>
-                <td><button id="bid_button-9h">9 H</button></td>
-                <td><button id="bid_button-9nt">9 NT</button></td>
-            </tr>
-            <tr>
-                <td><button id="bid_button-10s">10 S</button></td>
-                <td><button id="bid_button-10s">10 C</button></td>
-                <td><button id="bid_button-10s">10 D</button></td>
-                <td><button id="bid_button-10h">10 H</button></td>
-                <td><button id="bid_button-10nt">10 NT</button></td>
-            </tr>
-        </table>
+    <div id="lobbyContainer">
+        <h1>Lobby</h1>
+        <div id="connectionDetails">
+            <p>What is your name?</p>
+            <input type="text" name="player0Name" id="playerNameInput" autofocus>
+            <button onclick="lobbyConnect()">Connect</button>
+        </div>
+        <div id="gamesDetails" hidden>
+            <h2>Games:</h2>
+            <ul id="gamesList"></ul>
+            <button id="createGameButton">Create a game</button>
+        </div>
+        <div id="waitingDetails" hidden>
+            <h2>Players waiting:</h2>
+            <ul id="waitingPlayersList"></ul>
+            <button id="leaveGameButton">Back</button>
+        </div>
+    </div>
+    <div id="gameContainer" hidden>
+        <button onclick="giveKitty()">Kitty</button>
+        <div id="cardContainer"></div>
+        <span id="playerBidText">
+            <div id="player0Bid"></div>
+            <div id="player1Bid"></div>
+            <div id="player2Bid"></div>
+            <div id="player3Bid"></div>
+            <div id="player4Bid"></div>
+        </span>
+        <div id="bid_section">
+            <button id="bid_pass">Pass</button>
+            <table>
+                <tr>
+                    <td><button id="bid_button-6s">6 S</button></td>
+                    <td><button id="bid_button-6s">6 C</button></td>
+                    <td><button id="bid_button-6s">6 D</button></td>
+                    <td><button id="bid_button-6h">6 H</button></td>
+                    <td><button id="bid_button-6nt">6 NT</button></td>
+                </tr>
+                <tr>
+                    <td><button id="bid_button-7s">7 S</button></td>
+                    <td><button id="bid_button-7s">7 C</button></td>
+                    <td><button id="bid_button-7s">7 D</button></td>
+                    <td><button id="bid_button-7h">7 H</button></td>
+                    <td><button id="bid_button-7nt">7 NT</button></td>
+                </tr>
+                <tr>
+                    <td><button id="bid_button-8s">8 S</button></td>
+                    <td><button id="bid_button-8s">8 C</button></td>
+                    <td><button id="bid_button-8s">8 D</button></td>
+                    <td><button id="bid_button-8h">8 H</button></td>
+                    <td><button id="bid_button-8nt">8 NT</button></td>
+                </tr>
+                <tr>
+                    <td><button id="bid_button-9s">9 S</button></td>
+                    <td><button id="bid_button-9s">9 C</button></td>
+                    <td><button id="bid_button-9s">9 D</button></td>
+                    <td><button id="bid_button-9h">9 H</button></td>
+                    <td><button id="bid_button-9nt">9 NT</button></td>
+                </tr>
+                <tr>
+                    <td><button id="bid_button-10s">10 S</button></td>
+                    <td><button id="bid_button-10s">10 C</button></td>
+                    <td><button id="bid_button-10s">10 D</button></td>
+                    <td><button id="bid_button-10h">10 H</button></td>
+                    <td><button id="bid_button-10nt">10 NT</button></td>
+                </tr>
+            </table>
+        </div>
+        <script src="static/cardData.js"></script>
+        <script src="static/canvas.js"></script>
+        <script src="static/communication.js"></script>
     </div>
 </body>
 
