@@ -79,10 +79,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 });
 
-function kittyCardClicked(e) {
-    console.log(e)
-}
-
 function giveKitty() {
     kitty = ['diamond_9', 'spade_10', 'heart_king']
 

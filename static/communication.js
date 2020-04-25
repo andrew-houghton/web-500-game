@@ -11,7 +11,11 @@ function setupSocketHandlers(socket) {
         for (let i = 0; i < games.length; i++) {
             listItem = document.createElement('li');
             listItem.textContent = games[i].name + ' - ' + games[i].spots;
+            listItem.onclick = function(event) {
+                socket.emit('join game', games[i].id);
+            };
             gamesList.appendChild(listItem);
+
         }
     });
 
@@ -21,7 +25,6 @@ function setupSocketHandlers(socket) {
 
     document.getElementById("leaveGameButton").onclick = function(event) {
         socket.emit('exit waiting');
-        console.log("exit waiting")
     };
 
     socket.on('waiting', (players) => {
@@ -42,7 +45,6 @@ function lobbyConnect() {
     if (connectionEnabled) {
         name = document.getElementById("playerNameInput").value
         if (name.trim().length > 1) {
-            console.log("Connecting " + name.trim())
             socket = io({ query: { playerName: name.trim() } });
             setupSocketHandlers(socket)
         }
