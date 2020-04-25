@@ -4,10 +4,15 @@ function setupSocketHandlers(socket) {
     socket.on('connection', function() {
         console.log("Connected")
     });
-    socket.on('games', (msg) => {
+    socket.on('games', (games) => {
         document.getElementById("connectionDetails").hidden = true;
         document.getElementById("gamesDetails").hidden = false;
-        console.log("// TODO populate games list");
+        gamesList = document.getElementById("gamesList")
+        for (let i = 0; i < games.length; i++) {
+            listItem = document.createElement('li');
+            listItem.textContent = games[i].name + ' - ' + games[i].spots;
+            gamesList.appendChild(listItem);
+        }
     });
     document.getElementById("createGameButton").onclick = function(event) {
         console.log("Creating game")
@@ -19,7 +24,7 @@ function setupSocketHandlers(socket) {
         waitingPlayersList = document.getElementById("waitingPlayersList")
         for (let i = 0; i < players.length; i++) {
             listItem = document.createElement('li');
-            listItem.innerHTML = players[i];
+            listItem.textContent = players[i];
             waitingPlayersList.appendChild(listItem);
         }
     });
