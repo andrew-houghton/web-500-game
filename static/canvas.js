@@ -9,7 +9,7 @@ function drawHand(cards, x, y, direction, playerId) {
     var images = [];
     for (let i = 0; i < cards.length; i++) {
         images.push(new Image());
-        images[i].classList.add("cardPlayer"+playerId);
+        images[i].classList.add("cardPlayer" + playerId);
         images[i].addEventListener('load', function() {
             card_degrees = -cards.length * perCardDegrees / 2 + 3 + perCardDegrees * i + direction;
             var cardX = Math.floor(x + Math.sin(card_degrees * Math.PI / 180) * cardSpread);
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function() {
         var bidTextElement = document.getElementById("player" + i + "Bid");
         x = handLocations[i][0] * window.innerWidth + cardSpread * 1.2 * Math.sin(handLocations[i][2] * Math.PI / 180);
         y = handLocations[i][1] * window.innerHeight - cardSpread * 1.2 * Math.cos(handLocations[i][2] * Math.PI / 180);
-        if (handLocations[i][2] != 180 && handLocations[i][2] != 0){
+        if (handLocations[i][2] != 180 && handLocations[i][2] != 0) {
             bidTextElement.setAttribute("style", "transform: rotate(" + handLocations[i][2] + "deg)");
         }
         bidTextElement.style.left = x + 'px';
@@ -108,11 +108,18 @@ function giveKitty() {
     }
 
     // Allow selecting and delesecting opponents
-    for (let playerId = 1; playerId < 5; playerId++){
-        document.querySelectorAll('img.cardPlayer'+playerId).forEach(e => e.addEventListener('click', function() {
+    for (let playerId = 1; playerId < 5; playerId++) {
+        document.querySelectorAll('img.cardPlayer' + playerId).forEach(e => e.addEventListener('click', function() {
             document.querySelectorAll('img.chosen').forEach(j => j.classList.remove("chosen"))
-            document.querySelectorAll('img.cardPlayer'+playerId).forEach(j => j.classList.add("chosen"))
+            document.querySelectorAll('img.cardPlayer' + playerId).forEach(j => j.classList.add("chosen"))
         }));
 
     }
 }
+
+
+
+document.getElementById("playerNameInput").addEventListener("keyup", function(event) {
+    // Number 13 is the "Enter" key on the keyboard
+    if (event.keyCode === 13) { lobbyConnect(); }
+});
