@@ -2,12 +2,12 @@ const cardWidth = 112;
 const cardHeight = 163;
 const perCardDegrees = 6;
 const perCardRadians = perCardDegrees * Math.PI / 180;
-const cardSpread = 200;
+const cardSpread = 300;
 document.addEventListener("DOMContentLoaded", function() {
     var cardContainer = document.getElementById("cardContainer");
 
     function draw(img, x, y, rotation) {
-        img.setAttribute("style", "transform: rotate(" + rotation + "deg)")
+        img.setAttribute("style", "transform: rotate(" + rotation + "deg)");
         img.style.left = (x - cardWidth / 2) + 'px';
         img.style.top = (y - cardHeight / 2) + 'px';
     }
@@ -28,19 +28,45 @@ document.addEventListener("DOMContentLoaded", function() {
             cardContainer.appendChild(images[i]);
         }
     }
+
     handLocations = [
         [0.5, 1, 0],
-        [0, 0.4, 90],
+        [0, 0.5, 90],
         [0.3, 0, 180],
         [0.7, 0, 180],
-        [1, 0.4, 270],
-    ]
+        [1, 0.5, 270],
+    ];
+    hands = [
+        ['diamond_7', 'diamond_jack', 'spade_jack', 'spade_queen', 'heart_10', 'heart_jack', 'heart_1', 'club_9', 'club_jack', 'joker_red'],
+        ['back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back'],
+        ['back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back'],
+        ['back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back'],
+        ['back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back'],
+    ];
+    recentBids = [
+        "Pass",
+        "Pass",
+        "",
+        "6 Spades",
+        "6 Hearts",
+    ];
     for (let i = 0; i < handLocations.length; i++) {
         drawHand(
-            ['club_6', 'club_5', 'club_4', 'club_6', 'club_6', 'club_6', 'club_6', 'club_6', 'club_6', 'club_6'],
+            hands[i],
             handLocations[i][0] * window.innerWidth,
             handLocations[i][1] * window.innerHeight,
             handLocations[i][2],
         );
+
+        var bidTextElement = document.getElementById("player" + i + "Bid");
+        x = handLocations[i][0] * window.innerWidth + cardSpread * 1.2 * Math.sin(handLocations[i][2] * Math.PI / 180);
+        y = handLocations[i][1] * window.innerHeight - cardSpread * 1.2 * Math.cos(handLocations[i][2] * Math.PI / 180);
+        console.log(bidTextElement, x, y);
+        if (handLocations[i][2] != 180 && handLocations[i][2] != 0){
+            bidTextElement.setAttribute("style", "transform: rotate(" + handLocations[i][2] + "deg)");
+        }
+        bidTextElement.style.left = x + 'px';
+        bidTextElement.style.top = y + 'px';
+        bidTextElement.innerHTML = recentBids[i];
     }
 });
