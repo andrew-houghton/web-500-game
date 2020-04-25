@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function drawHand(cards, x, y, direction) {
-        console.log("Drawing hand at ", x, y, direction)
         var images = [];
         for (let i = 0; i < cards.length; i++) {
             images.push(new Image());
