@@ -5,12 +5,23 @@ const perCardRadians = perCardDegrees * Math.PI / 180;
 const cardSpread = 300;
 var cardContainer = document.getElementById("cardContainer");
 
-function drawHand(cards, x, y, direction, playerId) {
+handLocations = [
+    [0.5, 1, 0],
+    [0, 0.5, 90],
+    [0.3, 0, 180],
+    [0.7, 0, 180],
+    [1, 0.5, 270],
+];
+
+function drawHand(cards, playerId) {
     var images = [];
     for (let i = 0; i < cards.length; i++) {
         images.push(new Image());
         images[i].classList.add("cardPlayer" + playerId);
         images[i].addEventListener('load', function() {
+            direction = handLocations[playerId][2]
+            x = handLocations[playerId][0] * window.innerWidth
+            y = handLocations[playerId][1] * window.innerHeight
             card_degrees = -cards.length * perCardDegrees / 2 + 3 + perCardDegrees * i + direction;
             var cardX = Math.floor(x + Math.sin(card_degrees * Math.PI / 180) * cardSpread);
             var cardY = Math.floor(y - Math.cos(card_degrees * Math.PI / 180) * cardSpread);
@@ -32,37 +43,7 @@ function draw(img, x, y, rotation) {
 
 document.addEventListener("DOMContentLoaded", function() {
     // Sample data
-    handLocations = [
-        [0.5, 1, 0],
-        [0, 0.5, 90],
-        [0.3, 0, 180],
-        [0.7, 0, 180],
-        [1, 0.5, 270],
-    ];
-    hands = [
-        ['diamond_7', 'diamond_jack', 'spade_jack', 'spade_queen', 'heart_10', 'heart_jack', 'heart_1', 'club_9', 'club_jack', 'joker_red'],
-        ['back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back'],
-        ['back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back'],
-        ['back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back'],
-        ['back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back', 'back'],
-    ];
-    recentBids = [
-        "Pass",
-        "Pass",
-        "",
-        "6 Spades",
-        "6 Hearts",
-    ];
-
     for (let i = 0; i < handLocations.length; i++) {
-        drawHand(
-            hands[i],
-            handLocations[i][0] * window.innerWidth,
-            handLocations[i][1] * window.innerHeight,
-            handLocations[i][2],
-            i,
-        );
-
         // Set bid text locations
         var bidTextElement = document.getElementById("player" + i + "Bid");
         x = handLocations[i][0] * window.innerWidth + cardSpread * 1.2 * Math.sin(handLocations[i][2] * Math.PI / 180);
@@ -72,11 +53,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         bidTextElement.style.left = x + 'px';
         bidTextElement.style.top = y + 'px';
-
-        // Set bid text
-        bidTextElement.innerHTML = recentBids[i];
     }
-
 });
 
 function giveKitty() {
@@ -112,8 +89,6 @@ function giveKitty() {
 
     }
 }
-
-
 
 document.getElementById("playerNameInput").addEventListener("keyup", function(event) {
     // Number 13 is the "Enter" key on the keyboard

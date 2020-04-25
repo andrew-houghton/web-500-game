@@ -5,6 +5,7 @@ function setupSocketHandlers(socket) {
         document.getElementById("connectionDetails").hidden = true;
         document.getElementById("gamesDetails").hidden = false;
         document.getElementById("waitingDetails").hidden = true;
+        document.getElementById("gameContainer").hidden = true;
 
         gamesList = document.getElementById("gamesList")
         gamesList.innerHTML = '';
@@ -20,7 +21,7 @@ function setupSocketHandlers(socket) {
     });
 
     document.getElementById("createGameButton").onclick = function(event) {
-        socket.emit('create game')
+        socket.emit('create game');
     };
 
     document.getElementById("leaveGameButton").onclick = function(event) {
@@ -31,12 +32,24 @@ function setupSocketHandlers(socket) {
         document.getElementById("connectionDetails").hidden = true;
         document.getElementById("gamesDetails").hidden = true;
         document.getElementById("waitingDetails").hidden = false;
+        document.getElementById("gameContainer").hidden = true;
         waitingPlayersList = document.getElementById("waitingPlayersList")
         waitingPlayersList.innerHTML = '';
         for (let i = 0; i < players.length; i++) {
             listItem = document.createElement('li');
             listItem.textContent = players[i];
             waitingPlayersList.appendChild(listItem);
+        }
+    });
+
+    socket.on('begin', (playerHand) => {
+        document.getElementById("connectionDetails").hidden = true;
+        document.getElementById("gamesDetails").hidden = true;
+        document.getElementById("waitingDetails").hidden = true;
+        document.getElementById("gameContainer").hidden = false;
+        drawHand(playerHand, 0);
+        for (let i = 1; i < 5; i++) {
+            drawHand(Array(10).fill("back"), i);
         }
     });
 }

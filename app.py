@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit, join_room, leave_room, rooms
+from game import deal
+
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret!"
@@ -10,6 +12,7 @@ player_names = {}
 games = {}
 game_room = set()
 current_game = {}
+hands = {}
 
 
 def get_games_to_display():
@@ -89,7 +92,13 @@ def join_game(game_id):
     game_room.remove(request.sid)
     games[game_id].append(request.sid)
     current_game[request.sid] = game_id
-    update_waiting_players(game_id)
+    if len(games[game_id]) < 5:
+        update_waiting_players(game_id)
+    else:
+        player_hands, kitty = deal()
+        hands[game_id] = (player_hands, kitty)
+        for player, hand in zip(games[game_id], player_hands):
+            emit("begin", hand, room=player)
 
 
 @socketio.on("exit waiting")
