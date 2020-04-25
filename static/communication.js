@@ -4,7 +4,9 @@ function setupSocketHandlers(socket) {
     socket.on('connection', function() {
         console.log("Connected")
     });
+
     socket.on('games', (games) => {
+        console.log("received games")
         document.getElementById("connectionDetails").hidden = true;
         document.getElementById("gamesDetails").hidden = false;
         gamesList = document.getElementById("gamesList")
@@ -14,10 +16,12 @@ function setupSocketHandlers(socket) {
             gamesList.appendChild(listItem);
         }
     });
+
     document.getElementById("createGameButton").onclick = function(event) {
         console.log("Creating game")
         socket.emit('create game')
     };
+
     socket.on('waiting', (players) => {
         document.getElementById("gamesDetails").hidden = true;
         document.getElementById("waitingDetails").hidden = false;
