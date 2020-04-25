@@ -78,7 +78,7 @@ def test_disconnect():
 
 
 @socketio.on("create game")
-def start_game():
+def start_game(): 
     game_room.remove(request.sid)
     games[request.sid] = [request.sid]
     current_game[request.sid] = request.sid
