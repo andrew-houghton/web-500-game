@@ -34,6 +34,19 @@ img {
     position: absolute;
 }
 
+.selected {
+    margin-top: -25px;
+    margin-left: -5px;
+    border: 5px solid orange;
+    border-radius: 5px;
+}
+.chosen {
+    margin-top: -5px;
+    margin-left: -5px;
+    border: 5px solid yellow;
+    border-radius: 5px;
+}
+
 html { 
   background: 
     linear-gradient(
