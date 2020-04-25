@@ -9,6 +9,7 @@ socketio = SocketIO(app, logger=True, engineio_logger=True)
 player_names = {}
 games = {}
 game_room = set()
+current_game = {}
 
 
 def get_games_to_display():
@@ -35,33 +36,47 @@ def connect():
     emit("games", get_games_to_display())
     game_room.add(request.sid)
 
+def update_game_room():
+    games_to_display = get_games_to_display()
+    for sid in game_room:
+        emit('games', games_to_display, room=sid)
+
+def remove_player_from_game(sid):
+    games[current_game[sid]].remove(sid)
+    if current_game[sid] == sid:
+        players = games[current_game[sid]]
+        if len(players) > 0:
+            games[players[0]] = players
+            for player_id in players:
+                current_game[player_id] = players[0]
+        del games[sid]
+
 
 @socketio.on('disconnect')
 def test_disconnect():
     if request.sid in game_room:
         game_room.remove(request.sid)
+    if request.sid in current_game:
+        del current_game[request.sid]
+        remove_player_from_game(request.sid)
     if request.sid in player_names:
         del player_names[request.sid]
-    items = list(games.items())
-    for owner, players in items:
-        if request.sid in players:
-            players.remove(request.sid)
-        if owner == request.sid:
-            if len(players) > 0:
-                games[players[0]] = players
-                del games[request.sid]
-            else:
-                del games[request.sid]
 
 
 @socketio.on("create game")
 def start_game():
     game_room.remove(request.sid)
     games[request.sid] = [request.sid]
+    current_game[request.sid] = request.sid
     emit("waiting", [player_names[sid] for sid in games[request.sid]])
-    for sid in game_room:
-        emit('games', get_games_to_display(), room=sid)
+    update_game_room()
 
+
+@socketio.on("exit waiting")
+def exit_waiting():
+    game_room.add(request.sid)
+    remove_player_from_game(request.sid)
+    update_game_room()
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)

@@ -1,15 +1,13 @@
 var connectionEnabled = true;
 
 function setupSocketHandlers(socket) {
-    socket.on('connection', function() {
-        console.log("Connected")
-    });
-
     socket.on('games', (games) => {
-        console.log("received games")
         document.getElementById("connectionDetails").hidden = true;
         document.getElementById("gamesDetails").hidden = false;
+        document.getElementById("waitingDetails").hidden = true;
+
         gamesList = document.getElementById("gamesList")
+        gamesList.innerHTML = '';
         for (let i = 0; i < games.length; i++) {
             listItem = document.createElement('li');
             listItem.textContent = games[i].name + ' - ' + games[i].spots;
@@ -18,14 +16,20 @@ function setupSocketHandlers(socket) {
     });
 
     document.getElementById("createGameButton").onclick = function(event) {
-        console.log("Creating game")
         socket.emit('create game')
     };
 
+    document.getElementById("leaveGameButton").onclick = function(event) {
+        socket.emit('exit waiting');
+        console.log("exit waiting")
+    };
+
     socket.on('waiting', (players) => {
+        document.getElementById("connectionDetails").hidden = true;
         document.getElementById("gamesDetails").hidden = true;
         document.getElementById("waitingDetails").hidden = false;
         waitingPlayersList = document.getElementById("waitingPlayersList")
+        waitingPlayersList.innerHTML = '';
         for (let i = 0; i < players.length; i++) {
             listItem = document.createElement('li');
             listItem.textContent = players[i];
