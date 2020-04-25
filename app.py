@@ -92,7 +92,7 @@ def join_game(game_id):
     game_room.remove(request.sid)
     games[game_id].append(request.sid)
     current_game[request.sid] = game_id
-    if len(games[game_id]) < 5:
+    if len(games[game_id]) < 2:
         update_waiting_players(game_id)
     else:
         player_hands, kitty = deal()

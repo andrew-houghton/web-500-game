@@ -2,7 +2,7 @@ const cardWidth = 112;
 const cardHeight = 163;
 const perCardDegrees = 6;
 const perCardRadians = perCardDegrees * Math.PI / 180;
-const cardSpread = 300;
+const cardSpread = 500;
 var cardContainer = document.getElementById("cardContainer");
 
 handLocations = [
@@ -25,8 +25,8 @@ function drawHand(cards, playerId) {
             card_degrees = -cards.length * perCardDegrees / 2 + 3 + perCardDegrees * i + direction;
             var cardX = Math.floor(x + Math.sin(card_degrees * Math.PI / 180) * cardSpread);
             var cardY = Math.floor(y - Math.cos(card_degrees * Math.PI / 180) * cardSpread);
-            cardX = cardX - cardSpread / 3 * Math.sin(direction * Math.PI / 180);
-            cardY = cardY + cardSpread / 3 * Math.cos(direction * Math.PI / 180);
+            cardX = cardX - cardSpread / 1.6 * Math.sin(direction * Math.PI / 180);
+            cardY = cardY + cardSpread / 1.6 * Math.cos(direction * Math.PI / 180);
             draw(images[i], cardX, cardY, card_degrees);
         });
         images[i].src = "data:image/png;base64," + cardData[cards[i]];
