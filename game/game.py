@@ -3,6 +3,7 @@ import random
 from game.card_list import card_list, all_bids
 from collections import defaultdict
 from flask_socketio import emit
+from game.card_sorting import sort_card_list
 
 
 class Game:
@@ -54,7 +55,7 @@ class Game:
         for i in range(5):
             # Send names from the perspective of the current player
             player_names = [self.player_names[(i + j) % 5] for j in range(5)]
-            emit("bid deal", (self.hands[i], scores, player_names), room=self.player_sids[i])
+            emit("bid deal", (sort_card_list(self.hands[i], 'n'), scores, player_names), room=self.player_sids[i])
 
         self.player_to_bid = self.dealer
         self.dealer = (self.dealer + 1) % 5
@@ -79,7 +80,7 @@ class Game:
         player_winning_bid_name = self.player_names[self.player_winning_bid]
         for i in range(5):
             if i == self.player_winning_bid:
-                emit("kitty request", self.kitty+self.hands[self.player_winning_bid], room=self.player_sids[i])
+                emit("kitty request", sort_card_list(self.kitty+self.hands[self.player_winning_bid], self.bids[self.player_winning_bid][1]), room=self.player_sids[i])
             else:
                 emit(
                     "kitty status",
