@@ -53,3 +53,9 @@ card_list = [
     "spade_queen",
     "joker",
 ]
+
+all_bids = {}
+_suits = ["Spades", "Clubs", "Diamonds", "Hearts", "No trumps"]
+for number in range(6, 11):
+    for suit_num, suit in enumerate(_suits):
+        all_bids[f"{number}{suit[0].lower()}"] = {"points": 100 * number + 20 * suit_num - 560, "name": f"{number} {suit}"}

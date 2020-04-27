@@ -5,7 +5,7 @@ from game.game import Game
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret!"
-socketio = SocketIO(app, logger=True, engineio_logger=True)
+socketio = SocketIO(app, logger=True)
 
 games = []
 player_names = {}
@@ -92,8 +92,8 @@ def exit_waiting():
     player_leaving_game(request.sid)
 
 @socketio.on("bid")
-def bid(card):
-    player_games[request.sid].bid(request.sid, card)
+def bid(bid):
+    player_games[request.sid].bid(request.sid, bid)
 
 @socketio.on("kitty")
 def kitty(cards, player_index):
