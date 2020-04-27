@@ -8,10 +8,12 @@
     height: 200px;
 }
 
-#playerBidText div {
+div.playerBidText {
     position: absolute;
-    color: white;
-    font-size: 24px;
+    font-size: 18px;
+}
+div.playerBidText p {
+    margin: 0px;
 }
 
 body,

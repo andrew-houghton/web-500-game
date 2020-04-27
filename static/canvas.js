@@ -45,14 +45,14 @@ document.addEventListener("DOMContentLoaded", function() {
     // Sample data
     for (let i = 0; i < handLocations.length; i++) {
         // Set bid text locations
-        var bidTextElement = document.getElementById("player" + i + "Bid");
-        x = handLocations[i][0] * window.innerWidth + cardSpread * 1.2 * Math.sin(handLocations[i][2] * Math.PI / 180);
-        y = handLocations[i][1] * window.innerHeight - cardSpread * 1.2 * Math.cos(handLocations[i][2] * Math.PI / 180);
+        var statusElement = document.getElementById("player" + i + "Status");
+        x = handLocations[i][0] * window.innerWidth + cardSpread * 0.7 * Math.sin(handLocations[i][2] * Math.PI / 180);
+        y = handLocations[i][1] * window.innerHeight - cardSpread * 0.7 * Math.cos(handLocations[i][2] * Math.PI / 180);
         if (handLocations[i][2] != 180 && handLocations[i][2] != 0) {
-            bidTextElement.setAttribute("style", "transform: rotate(" + handLocations[i][2] + "deg)");
+            statusElement.setAttribute("style", "transform: rotate(" + handLocations[i][2] + "deg)");
         }
-        bidTextElement.style.left = x + 'px';
-        bidTextElement.style.top = y + 'px';
+        statusElement.style.left = x + 'px';
+        statusElement.style.top = y + 'px';
     }
 });
 

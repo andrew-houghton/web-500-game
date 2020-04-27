@@ -49,6 +49,11 @@ function setupSocketHandlers(socket) {
         for (let i = 1; i < 5; i++) {
             drawHand(Array(10).fill("back"), i);
         }
+
+        for (let i=0; i< playerNames.length; i++) {
+            var bidTextElement = document.getElementById("player" + i + "Name");
+            bidTextElement.textContent = playerNames[i];
+        }
     });
 
     socket.on('bid request', (previousBids, validBids) => {
@@ -71,10 +76,17 @@ function setupSocketHandlers(socket) {
                 button.onclick = null;
             }
         }
+        for (let i=0; i< previousBids.length; i++) {
+            var bidTextElement = document.getElementById("player" + i + "Bid");
+            bidTextElement.textContent = previousBids[i];
+        }
     });
 
     socket.on('bid status', (previousBids, biddingPlayerName) => {
-        // TODO
+        for (let i=0; i< previousBids.length; i++) {
+            var bidTextElement = document.getElementById("player" + i + "Bid");
+            bidTextElement.textContent = previousBids[i];
+        }
     });
 
     socket.on('kitty request', (playerHand) => {

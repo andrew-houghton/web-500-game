@@ -60,9 +60,16 @@ class Game:
         self.dealer = (self.dealer + 1) % 5
         self.send_bid_requests()
 
+    def bid_name(self, bid):
+        if bid in all_bids:
+            return all_bids[bid]["name"]
+        elif bid == "p":
+            return "Pass"
+        return ""
+
     def send_bid_requests(self):
         for i in range(5):
-            previous_bids = [self.bids.get((i + j) % 5) for j in range(5)]
+            previous_bids = [self.bid_name(self.bids.get((i + j) % 5)) for j in range(5)]
             if i == self.player_to_bid:
                 emit("bid request", (previous_bids, self.valid_bids), room=self.player_sids[i])
             else:
