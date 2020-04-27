@@ -9,6 +9,7 @@ socketio = SocketIO(app, logger=True, engineio_logger=True)
 
 games = []
 player_names = {}
+player_games = {}
 game_room = set()
 
 
@@ -47,13 +48,13 @@ def update_game_room():
 
 
 def player_leaving_game(sid):
-    for game in games:
-        if request.sid in game.player_sids:
-            game.remove_player(request.sid)
-            if len(game.player_sids) == 0:
-                games.remove(game)
-            break
-    update_game_room()
+    if sid in player_games:
+        game = player_games[sid]
+        game.remove_player(sid)
+        if len(game.player_sids) == 0:
+            games.remove(game)
+        del player_games[sid]
+        update_game_room()
 
 
 @socketio.on("disconnect")
@@ -71,6 +72,7 @@ def start_game():
     game = Game()
     games.append(game)
     game.add_player(request.sid, player_names[request.sid])
+    player_games[request.sid] = game
     update_game_room()
 
 
@@ -78,6 +80,7 @@ def start_game():
 def join_game(game_id):
     game = games[game_id]
     if len(game.player_sids) < 5:
+        player_games[request.sid] = game
         game_room.remove(request.sid)
         game.add_player(request.sid, player_names[request.sid])
         update_game_room()
@@ -88,7 +91,25 @@ def exit_waiting():
     game_room.add(request.sid)
     player_leaving_game(request.sid)
 
+@socketio.on("bid")
+def bid(card):
+    player_games[request.sid].bid(request.sid, card)
 
+@socketio.on("kitty")
+def kitty(cards, player_index):
+    player_games[request.sid].kitty(request.sid, card)
+
+@socketio.on("play card")
+def play_card(card):
+    player_games[request.sid].play_card(request.sid, card)
+
+@socketio.on("round again")
+def round_again():
+    pass
+
+@socketio.on("round ready")
+def round_ready():
+    pass
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
