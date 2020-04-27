@@ -15,8 +15,8 @@ class Game:
         self.dealer = 0
         self.player_to_bid = 0
         self.scores = None
-        self.valid_bids = [bid for bid in all_bids]
-        self.bids = {}
+        self.valid_bids = None
+        self.bids = None
         self.player_winning_bid = None
 
     def update_waiting_players(self):
@@ -48,6 +48,7 @@ class Game:
 
     def start_round(self):
         self.deal()
+        self.valid_bids = [bid for bid in all_bids]
         self.bids = {}
         scores = {self.player_names[i]: score for i, score in self.scores.items()}
         for i in range(5):
@@ -67,31 +68,37 @@ class Game:
             else:
                 emit("bid status", (previous_bids, self.player_names[i]), room=self.player_sids[i])
 
+    def send_kitty(self):
+        player_winning_bid_name = self.player_names[self.player_winning_bid]
+        for i in range(5):
+            if i == self.player_winning_bid:
+                emit("kitty request", self.kitty+self.hands[self.player_winning_bid], room=self.player_sids[i])
+            else:
+                emit(
+                    "kitty status",
+                    (player_winning_bid_name, self.bids[self.player_winning_bid]),
+                    room=self.player_sids[i],
+                )
+
+
     def bid(self, sid, bid):
         self.bids[self.player_sids.index(sid)] = bid
-        bid_points = 0 if bid == "p" else all_bids[bid]["points"]
-        self.valid_bids = [i for i in self.valid_bids if all_bids[i]["points"] > bid_points]
+        number_of_passes = len([i for i in self.bids.values() if i == "p"])
 
-        print(self.bids)
-        print(self.player_to_bid)
-        for i in range(1, 5):
-            if self.bids.get((self.player_to_bid + i) % 5) != "p":
-                self.player_to_bid = (self.player_to_bid + i) % 5
-                self.send_bid_requests()
-                return
-
-        if set(self.bids.values()) == {"p"}:
+        if number_of_passes == 5:
             # Everyone passed so redeal
             self.start_round()
-        else:
+        elif number_of_passes == 4 and len(self.bids) == 5:
             self.player_winning_bid = max(range(5), key=lambda i: all_bids.get(self.bids[i], {}).get("points", 0))
-            player_winning_bid_name = self.player_names[self.player_winning_bid]
-            for i in range(5):
-                if i == self.player_winning_bid:
-                    emit("kitty request", self.kitty, room=self.player_sids[i])
-                else:
-                    emit(
-                        "kitty status",
-                        (player_winning_bid_name, self.bids[self.player_winning_bid]),
-                        room=self.player_sids[i],
-                    )
+            self.send_kitty()
+        else:
+            bid_points = 0 if bid == "p" else all_bids[bid]["points"]
+            self.valid_bids = [i for i in self.valid_bids if all_bids[i]["points"] > bid_points]
+            print(self.player_to_bid)
+            for i in range(1, 5):
+                print((self.player_to_bid + i) % 5)
+                if self.bids.get((self.player_to_bid + i) % 5) != "p":
+                    print("didn't pass")
+                    self.player_to_bid = (self.player_to_bid + i) % 5
+                    self.send_bid_requests()
+                    return

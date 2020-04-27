@@ -56,40 +56,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
-function giveKitty() {
-    kitty = ['diamond_9', 'spade_10', 'heart_king']
-
-    // Update the hand
-    document.querySelectorAll('img.cardPlayer0').forEach(e => e.remove());
-    images = drawHand(
-        hands[0].concat(kitty),
-        handLocations[0][0] * window.innerWidth,
-        handLocations[0][1] * window.innerHeight,
-        handLocations[0][2],
-        0,
-    );
-
-    // Allow selecting and deselecting cards
-    for (let i = 0; i < images.length; i++) {
-        images[i].addEventListener('click', function() {
-            if (images[i].classList.contains("selected")) {
-                images[i].classList.remove("selected");
-            } else if (document.querySelectorAll('img.cardPlayer0.selected').length < 3) {
-                images[i].classList.add("selected");
-            }
-        });
-    }
-
-    // Allow selecting and delesecting opponents
-    for (let playerId = 1; playerId < 5; playerId++) {
-        document.querySelectorAll('img.cardPlayer' + playerId).forEach(e => e.addEventListener('click', function() {
-            document.querySelectorAll('img.chosen').forEach(j => j.classList.remove("chosen"))
-            document.querySelectorAll('img.cardPlayer' + playerId).forEach(j => j.classList.add("chosen"))
-        }));
-
-    }
-}
-
 document.getElementById("playerNameInput").addEventListener("keyup", function(event) {
     // Number 13 is the "Enter" key on the keyboard
     if (event.keyCode === 13) { lobbyConnect(); }

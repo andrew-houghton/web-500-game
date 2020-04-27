@@ -53,13 +53,19 @@ function setupSocketHandlers(socket) {
 
     socket.on('bid request', (previousBids, validBids) => {
         hideBidSection(false);
-        document.getElementById("bid_button_pass").onclick = function(event) { socket.emit("bid", "p"); };
+        document.getElementById("bid_button_pass").onclick = function(event) {
+            hideBidSection(true);
+            socket.emit("bid", "p");
+        };
         allBids = ['6s', '6c', '6d', '6h', '6n', '7s', '7c', '7d', '7h', '7n', '8s', '8c', '8d', '8h', '8n', '9s', '9c', '9d', '9h', '9n', '10s', '10c', '10d', '10h', '10n']
         for (let i = 0; i < allBids.length; i++) {
             button = document.getElementById("bid_button_" + allBids[i])
             if (validBids.includes(allBids[i])) {
                 button.hidden = false;
-                button.onclick = function(event) { socket.emit("bid", allBids[i]); };
+                button.onclick = function(event) {
+                    hideBidSection(true);
+                    socket.emit("bid", allBids[i]);
+                };
             } else {
                 button.hidden = true;
                 button.onclick = null;
@@ -68,7 +74,35 @@ function setupSocketHandlers(socket) {
     });
 
     socket.on('bid status', (previousBids, biddingPlayerName) => {
-        hideBidSection(true);
+        // TODO
+    });
+
+    socket.on('kitty request', (playerHand) => {
+        document.querySelectorAll('img.cardPlayer0').forEach(e => e.remove());
+        images = drawHand(playerHand, 0);
+
+        // Allow selecting and deselecting cards
+        for (let i = 0; i < images.length; i++) {
+            images[i].addEventListener('click', function() {
+                if (images[i].classList.contains("selected")) {
+                    images[i].classList.remove("selected");
+                } else if (document.querySelectorAll('img.cardPlayer0.selected').length < 3) {
+                    images[i].classList.add("selected");
+                }
+            });
+        }
+
+        // Allow selecting and delesecting opponents
+        for (let playerId = 1; playerId < 5; playerId++) {
+            document.querySelectorAll('img.cardPlayer' + playerId).forEach(e => e.addEventListener('click', function() {
+                if (document.querySelectorAll('img.cardPlayer' + playerId)[0].classList.contains("chosen")) {
+                    document.querySelectorAll('img.chosen').forEach(j => j.classList.remove("chosen"))
+                } else {
+                    document.querySelectorAll('img.chosen').forEach(j => j.classList.remove("chosen"))
+                    document.querySelectorAll('img.cardPlayer' + playerId).forEach(j => j.classList.add("chosen"))   
+                }
+            }));
+        }
     });
 }
 
