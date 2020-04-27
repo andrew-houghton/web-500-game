@@ -42,7 +42,6 @@ function draw(img, x, y, rotation) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    // Sample data
     for (let i = 0; i < handLocations.length; i++) {
         // Set bid text locations
         var statusElement = document.getElementById("player" + i + "Status");

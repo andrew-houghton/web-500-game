@@ -30,6 +30,13 @@ function setupSocketHandlers(socket) {
 
     document.getElementById("createGameButton").onclick = function(event) { socket.emit('lobby create'); };
     document.getElementById("leaveGameButton").onclick = function(event) { socket.emit('lobby exit'); };
+    document.getElementById("kittyFinishedButton").onclick = function(event) {
+        // TODO get index of selected cards
+        // TODO get index of partner
+        // TODO check that selection is valid
+        document.getElementById("kittyButtonControl").hidden = true;
+        // socket.emit('kitty');
+    };
 
     socket.on('lobby waiting', (players) => {
         showScreen("waitingDetails")
@@ -90,6 +97,7 @@ function setupSocketHandlers(socket) {
     });
 
     socket.on('kitty request', (playerHand) => {
+        document.getElementById("kittyButtonControl").hidden = false;
         document.querySelectorAll('img.cardPlayer0').forEach(e => e.remove());
         images = drawHand(playerHand, 0);
 
