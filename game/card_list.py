@@ -1,7 +1,3 @@
-import os
-import random
-
-
 card_list = [
     "club_10",
     "club_2",
@@ -57,9 +53,3 @@ card_list = [
     "spade_queen",
     "joker",
 ]
-
-def deal():
-    random.shuffle(card_list)
-    players = [card_list[i : i + 10] for i in range(0, 50, 10)]
-    kitty = card_list[-3:]
-    return players, kitty

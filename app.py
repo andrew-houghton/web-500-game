@@ -1,33 +1,15 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit, join_room, leave_room, rooms
-from game import deal
+from game.game import Game
 
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret!"
 socketio = SocketIO(app, logger=True, engineio_logger=True)
 
-
+games = []
 player_names = {}
-games = {}
 game_room = set()
-current_game = {}
-hands = {}
-
-
-def get_games_to_display():
-    games_to_display = []
-    for owner, players in games.items():
-        spots = 5 - len(players)
-        if spots > 0:
-            games_to_display.append(
-                {
-                    "id": owner,
-                    "spots": f"{spots} spot{'s' if spots > 1 else ''} left",
-                    "name": f"{player_names[owner]}'s game",
-                }
-            )
-    return games_to_display
 
 
 @app.route("/")
@@ -35,77 +17,77 @@ def hello_world():
     return render_template("index.html")
 
 
+def get_games_to_display():
+    games_to_display = []
+    for i in range(len(games)):
+        game = games[i]
+        spots = 5 - len(game.player_sids)
+        if spots > 0:
+            games_to_display.append(
+                {
+                    "id": i,
+                    "spots": f"{spots} spot{'s' if spots > 1 else ''} left",
+                    "name": f"{player_names[game.owner]}'s game",
+                }
+            )
+    return games_to_display
+
+
 @socketio.on("connect")
 def connect():
     player_names[request.sid] = request.args.get("playerName")
-    emit("games", get_games_to_display())
+    emit("lobby games", get_games_to_display())
     game_room.add(request.sid)
 
 
 def update_game_room():
     games_to_display = get_games_to_display()
     for sid in game_room:
-        emit("games", games_to_display, room=sid)
+        emit("lobby games", games_to_display, room=sid)
 
 
-def update_waiting_players(game_id):
-    waiting_players = [player_names[sid] for sid in games[game_id]]
-    for player in games[game_id]:
-        emit("waiting", waiting_players, room=player)
-
-
-def remove_player_from_game(sid):
-    games[current_game[sid]].remove(sid)
-    update_waiting_players(current_game[sid])
-    if current_game[sid] == sid:
-        players = games[current_game[sid]]
-        if len(players) > 0:
-            games[players[0]] = players
-            for player_id in players:
-                current_game[player_id] = players[0]
-        del games[sid]
+def player_leaving_game(sid):
+    for game in games:
+        if request.sid in game.player_sids:
+            game.remove_player(request.sid)
+            if len(game.player_sids) == 0:
+                games.remove(game)
+            break
+    update_game_room()
 
 
 @socketio.on("disconnect")
 def test_disconnect():
     if request.sid in game_room:
         game_room.remove(request.sid)
-    if request.sid in current_game:
-        remove_player_from_game(request.sid)
-        del current_game[request.sid]
+    player_leaving_game(request.sid)
     if request.sid in player_names:
         del player_names[request.sid]
 
 
-@socketio.on("create game")
+@socketio.on("lobby create")
 def start_game(): 
     game_room.remove(request.sid)
-    games[request.sid] = [request.sid]
-    current_game[request.sid] = request.sid
-    emit("waiting", [player_names[sid] for sid in games[request.sid]])
+    game = Game()
+    games.append(game)
+    game.add_player(request.sid, player_names[request.sid])
     update_game_room()
 
 
-@socketio.on("join game")
+@socketio.on("lobby join")
 def join_game(game_id):
-    print(game_id)
-    game_room.remove(request.sid)
-    games[game_id].append(request.sid)
-    current_game[request.sid] = game_id
-    if len(games[game_id]) < 2:
-        update_waiting_players(game_id)
-    else:
-        player_hands, kitty = deal()
-        hands[game_id] = (player_hands, kitty)
-        for player, hand in zip(games[game_id], player_hands):
-            emit("begin", hand, room=player)
+    game = games[game_id]
+    if len(game.player_sids) < 5:
+        game_room.remove(request.sid)
+        game.add_player(request.sid, player_names[request.sid])
+        update_game_room()
 
 
-@socketio.on("exit waiting")
+@socketio.on("lobby exit")
 def exit_waiting():
     game_room.add(request.sid)
-    remove_player_from_game(request.sid)
-    update_game_room()
+    player_leaving_game(request.sid)
+
 
 
 if __name__ == "__main__":

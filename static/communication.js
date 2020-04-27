@@ -1,7 +1,7 @@
 var connectionEnabled = true;
 
 function setupSocketHandlers(socket) {
-    socket.on('games', (games) => {
+    socket.on('lobby games', (games) => {
         document.getElementById("connectionDetails").hidden = true;
         document.getElementById("gamesDetails").hidden = false;
         document.getElementById("waitingDetails").hidden = true;
@@ -13,7 +13,7 @@ function setupSocketHandlers(socket) {
             listItem = document.createElement('li');
             listItem.textContent = games[i].name + ' - ' + games[i].spots;
             listItem.onclick = function(event) {
-                socket.emit('join game', games[i].id);
+                socket.emit('lobby join', games[i].id);
             };
             gamesList.appendChild(listItem);
 
@@ -21,14 +21,14 @@ function setupSocketHandlers(socket) {
     });
 
     document.getElementById("createGameButton").onclick = function(event) {
-        socket.emit('create game');
+        socket.emit('lobby create');
     };
 
     document.getElementById("leaveGameButton").onclick = function(event) {
-        socket.emit('exit waiting');
+        socket.emit('lobby exit');
     };
 
-    socket.on('waiting', (players) => {
+    socket.on('lobby waiting', (players) => {
         document.getElementById("connectionDetails").hidden = true;
         document.getElementById("gamesDetails").hidden = true;
         document.getElementById("waitingDetails").hidden = false;
@@ -42,7 +42,7 @@ function setupSocketHandlers(socket) {
         }
     });
 
-    socket.on('begin', (playerHand) => {
+    socket.on('deal', (playerHand) => {
         document.getElementById("connectionDetails").hidden = true;
         document.getElementById("gamesDetails").hidden = true;
         document.getElementById("waitingDetails").hidden = true;
