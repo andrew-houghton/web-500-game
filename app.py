@@ -96,10 +96,10 @@ def bid(bid):
     player_games[request.sid].bid(request.sid, bid)
 
 @socketio.on("kitty")
-def kitty(cards, player_index):
-    player_games[request.sid].kitty(request.sid, card)
+def kitty(discarded_kitty, player_index):
+    player_games[request.sid].kitty(request.sid, discarded_kitty, player_index)
 
-@socketio.on("play card")
+@socketio.on("play")
 def play_card(card):
     player_games[request.sid].play_card(request.sid, card)
 

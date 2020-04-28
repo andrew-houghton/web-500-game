@@ -4,6 +4,7 @@ from game.card_list import card_list, all_bids
 from collections import defaultdict
 from flask_socketio import emit
 from game.card_sorting import sort_card_list
+from game.card_validity import is_card_valid, winning_card_index
 
 
 class Game:
@@ -12,6 +13,7 @@ class Game:
         self.player_names = []
         self.owner = None
         self.hands = None
+        self.trick_cards = None
         self.kitty = None
         self.dealer = 0
         self.player_to_bid = 0
@@ -19,6 +21,10 @@ class Game:
         self.valid_bids = None
         self.bids = None
         self.player_winning_bid = None
+        self.partner_winning_bid = None
+        self.lead_player = None
+        self.attacking_tricks = None
+        self.defending_tricks = None
 
     def update_waiting_players(self):
         for player in self.player_sids:
@@ -55,7 +61,7 @@ class Game:
         for i in range(5):
             # Send names from the perspective of the current player
             player_names = [self.player_names[(i + j) % 5] for j in range(5)]
-            emit("bid deal", (sort_card_list(self.hands[i], 'n'), scores, player_names), room=self.player_sids[i])
+            emit("bid deal", (sort_card_list(self.hands[i], "n"), scores, player_names), room=self.player_sids[i])
 
         self.player_to_bid = self.dealer
         self.dealer = (self.dealer + 1) % 5
@@ -78,16 +84,22 @@ class Game:
 
     def send_kitty(self):
         player_winning_bid_name = self.player_names[self.player_winning_bid]
+        self.winning_bid = self.bids[self.player_winning_bid]
         for i in range(5):
             if i == self.player_winning_bid:
-                emit("kitty request", sort_card_list(self.kitty+self.hands[self.player_winning_bid], self.bids[self.player_winning_bid][1]), room=self.player_sids[i])
+                emit(
+                    "kitty request",
+                    sort_card_list(
+                        self.kitty + self.hands[self.player_winning_bid], self.winning_bid[1]
+                    ),
+                    room=self.player_sids[i],
+                )
             else:
                 emit(
                     "kitty status",
-                    (player_winning_bid_name, self.bids[self.player_winning_bid]),
+                    (player_winning_bid_name, self.winning_bid),
                     room=self.player_sids[i],
                 )
-
 
     def bid(self, sid, bid):
         self.bids[self.player_sids.index(sid)] = bid
@@ -102,11 +114,53 @@ class Game:
         else:
             bid_points = 0 if bid == "p" else all_bids[bid]["points"]
             self.valid_bids = [i for i in self.valid_bids if all_bids[i]["points"] > bid_points]
-            print(self.player_to_bid)
             for i in range(1, 5):
-                print((self.player_to_bid + i) % 5)
                 if self.bids.get((self.player_to_bid + i) % 5) != "p":
-                    print("didn't pass")
                     self.player_to_bid = (self.player_to_bid + i) % 5
                     self.send_bid_requests()
                     return
+
+    def kitty(self, sid, discarded_kitty, partner_index):
+        assert len(discarded_kitty) == 3
+        self.partner_winning_bid = (self.player_winning_bid + partner_index) % 5
+        self.hands[player_winning_bid] = list(set(self.hands[player_winning_bid]) - set(discarded_kitty))
+
+        winning_bid_name = all_bids[self.winning_bid]["name"]
+        if partner_index == 0:
+            status_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]} bid {winning_bid_name}"
+        else:
+            status_string = f"{self.player_names[self.player_winning_bid]} bid {winning_bid_name}"
+
+        for i in range(5):
+            emit("round status", (status_string, self.hands[i]), room=self.player_sids[i])
+
+        self.trick_cards = {}
+        self.attacking_tricks = 0
+        self.defending_tricks = 0
+        self.lead_player = self.player_winning_bid
+        self.send_play_request()
+
+    def send_play_request(self)
+        for i in range(5):
+            current_trick_cards = [self.trick_cards.get((i + j) % 5, "") for j in range(1, 5)]
+            hand_sizes = [len(self.hands[(i + j) % 5]) for j in range(1, 5)]
+            card_validity = [is_card_valid(current_trick_cards, self.winning_bid[1], self.hands[i], j) for j in range(len(self.hands[i]))]
+
+            if i == (self.lead_player + len(self.trick_cards)) % 5:
+                emit("play request", (current_trick_cards, hand_sizes, card_validity), room=self.player_sids[i])
+            else:
+                emit("play status", (current_trick_cards, self.player_names[i]), room=self.player_sids[i])
+
+    def play(self, sid, card):
+        # Save the played card
+        self.trick_cards[self.player_sids.index(sid)] = card
+
+        # Is the round finished
+        if len(self.trick_cards) == 5:
+            winner_index = winning_card_index(self.trick_cards, self.winning_bid[1], self.lead_player, )
+            if winner_index == self.player_winning_bid or winner_index == self.partner_winning_bid:
+                self.attacking_tricks += 1
+            else:
+                self.defending_tricks += 1
+        else:
+            self.send_play_request()
