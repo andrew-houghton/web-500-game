@@ -40,7 +40,7 @@ def is_card_valid(trick_cards, bid_suit, cards, index):
     return not has_lead_suit
 
 
-def get_card_number(bid_suit, card):
+def _get_card_number(bid_suit, card):
     if card == "joker":
         return 17
 
@@ -68,7 +68,7 @@ def winning_card_index(trick_cards, bid_suit, lead_index):
     if bid_suit != 'n':
         trumps_played = [card for card in trick_cards if _get_card_suit(bid_suit, card) == bid_suit]
         if len(trumps_played) > 0:
-            winning_card = max(trumps_played, lambda card: get_card_number(bid_suit, card, True))
+            winning_card = max(trumps_played, lambda card: _get_card_number(bid_suit, card, True))
             return trick_cards.index(winning_card)
 
     lead_suit = _get_card_suit(bid_suit, trick_cards[lead_index])

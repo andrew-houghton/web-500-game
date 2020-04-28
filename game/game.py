@@ -23,8 +23,9 @@ class Game:
         self.player_winning_bid = None
         self.partner_winning_bid = None
         self.lead_player = None
-        self.attacking_tricks = None
-        self.defending_tricks = None
+        self.tricks_won = None
+        self.tricks_record = None
+        self.points = defaultdict(int)
 
     def update_waiting_players(self):
         for player in self.player_sids:
@@ -89,17 +90,11 @@ class Game:
             if i == self.player_winning_bid:
                 emit(
                     "kitty request",
-                    sort_card_list(
-                        self.kitty + self.hands[self.player_winning_bid], self.winning_bid[1]
-                    ),
+                    sort_card_list(self.kitty + self.hands[self.player_winning_bid], self.winning_bid[1]),
                     room=self.player_sids[i],
                 )
             else:
-                emit(
-                    "kitty status",
-                    (player_winning_bid_name, self.winning_bid),
-                    room=self.player_sids[i],
-                )
+                emit("kitty status", (player_winning_bid_name, self.winning_bid), room=self.player_sids[i])
 
     def bid(self, sid, bid):
         self.bids[self.player_sids.index(sid)] = bid
@@ -134,22 +129,30 @@ class Game:
         for i in range(5):
             emit("round status", (status_string, self.hands[i]), room=self.player_sids[i])
 
+        self.tricks_record = []
         self.trick_cards = {}
-        self.attacking_tricks = 0
-        self.defending_tricks = 0
+        self.tricks_won = defaultdict(int)
         self.lead_player = self.player_winning_bid
         self.send_play_request()
 
-    def send_play_request(self)
+    def send_play_request(self):
         for i in range(5):
             current_trick_cards = [self.trick_cards.get((i + j) % 5, "") for j in range(1, 5)]
             hand_sizes = [len(self.hands[(i + j) % 5]) for j in range(1, 5)]
-            card_validity = [is_card_valid(current_trick_cards, self.winning_bid[1], self.hands[i], j) for j in range(len(self.hands[i]))]
+            card_validity = [
+                is_card_valid(current_trick_cards, self.winning_bid[1], self.hands[i], j)
+                for j in range(len(self.hands[i]))
+            ]
 
             if i == (self.lead_player + len(self.trick_cards)) % 5:
                 emit("play request", (current_trick_cards, hand_sizes, card_validity), room=self.player_sids[i])
             else:
                 emit("play status", (current_trick_cards, self.player_names[i]), room=self.player_sids[i])
+
+    def get_bid_number(bid):
+        for i in range(6, 11):
+            if str(i) in bid:
+                return i
 
     def play(self, sid, card):
         # Save the played card
@@ -157,10 +160,55 @@ class Game:
 
         # Is the round finished
         if len(self.trick_cards) == 5:
-            winner_index = winning_card_index(self.trick_cards, self.winning_bid[1], self.lead_player, )
-            if winner_index == self.player_winning_bid or winner_index == self.partner_winning_bid:
-                self.attacking_tricks += 1
+            winner_index = winning_card_index(self.trick_cards, self.winning_bid[1], self.lead_player)
+            self.tricks_won[winner_index] += 1
+            self.tricks_record.append(self.trick_cards)
+            self.trick_cards = {}
+            self.lead_player = winner_index
+
+            if len(tricks_record) == 10:
+                self.end_round()
+                return
             else:
-                self.defending_tricks += 1
+                for i in range(5):
+                    emit(
+                        "play trick",
+                        ((self.winner_index + i) % 5, self.attacking_tricks, self.defending_tricks),
+                        room=self.player_sids[i],
+                    )
+
+        self.send_play_request()
+
+    def end_round(self):
+        # Check if players got more tricks than bid
+        attacking_tricks = self.tricks_won[self.player_winning_bid]
+        if self.partner_winning_bid != self.player_winning_bid:
+            attacking_tricks += self.tricks_won[self.player_winning_bid]
+        bid_made = attacking_tricks >= get_bid_number(self.winning_bid)
+
+        # Update point totals
+        points_earnt = []
+        if self.partner_winning_bid != self.player_winning_bid:
+            attacker_points = all_bids[self.winning_bid]["points"] / 2
         else:
-            self.send_play_request()
+            attacker_points = all_bids[self.winning_bid]["points"]
+        if not bid_made:
+            attacker_points = -attacker_points
+
+        for i in range(5):
+            if i in (self.partner_winning_bid, self.player_winning_bid):
+                points_earnt.append(attacker_points)
+            else:
+                points_earnt.append(10 * self.tricks_won[i])
+            self.points[i] += points_earnt[i]
+
+        made_not_made_string = "made" if bid_made else "didn't make"
+        winning_bid_name = all_bids[self.winning_bid]["name"]
+        if self.partner_winning_bid != self.player_winning_bid:
+            status_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]} {made_not_made_string} {winning_bid_name}"
+        else:
+            status_string = f"{self.player_names[self.player_winning_bid]} {bid} {winning_bid_name}"
+
+        for i in range(5):
+            emit("round result", (status_string, points_earnt), room=self.player_sids[i])
+        self.start_round()
