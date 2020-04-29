@@ -13,7 +13,33 @@ handLocations = [
     [1, 0.5, 270],
 ];
 
+cardLocations = [
+    [0.5, 0.3, 0],
+    [0.3, 0.5, 90],
+    [0.3, 0.3, 180],
+    [0.7, 0.3, 180],
+    [0.7, 0.5, 270],
+]
+
+var blackHole = [];
+
+
+function drawPlayedCard(card, playerId){
+    blackHole[playerId] = new Image();
+    blackHole[playerId].classList.add("trickCardImage");
+    blackHole[playerId].addEventListener('load', function() {
+        let x = cardLocations[playerId][0] * window.innerWidth;
+        let y = cardLocations[playerId][1] * window.innerHeight;
+        console.log(blackHole[playerId], x, y, cardLocations[playerId][2]);
+        draw(blackHole[playerId], x, y, cardLocations[playerId][2]);
+    });
+    blackHole[playerId].src = "data:image/png;base64," + cardData[card];
+    cardContainer.appendChild(blackHole[playerId]);
+}
+
+
 function drawHand(cards, playerId) {
+    document.querySelectorAll('img.cardPlayer'+playerId).forEach(e => e.remove());
     var images = [];
     for (let i = 0; i < cards.length; i++) {
         images.push(new Image());
@@ -30,6 +56,11 @@ function drawHand(cards, playerId) {
             draw(images[i], cardX, cardY, card_degrees);
         });
         images[i].src = "data:image/png;base64," + cardData[cards[i]];
+        if (playerId == 0){
+            images[i].setAttribute('data', cards[i]);
+        } else {
+            images[i].setAttribute('data',playerId);
+        }
         cardContainer.appendChild(images[i]);
     }
     return images

@@ -115,18 +115,19 @@ class Game:
                     self.send_bid_requests()
                     return
 
-    def kitty(self, sid, discarded_kitty, partner_index):
+    def handle_kitty(self, sid, discarded_kitty, partner_index):
         assert len(discarded_kitty) == 3
         self.partner_winning_bid = (self.player_winning_bid + partner_index) % 5
-        self.hands[player_winning_bid] = list(set(self.hands[player_winning_bid]) - set(discarded_kitty))
+        self.hands[self.player_winning_bid] = list(set(self.hands[self.player_winning_bid] + self.kitty) - set(discarded_kitty))
 
         winning_bid_name = all_bids[self.winning_bid]["name"]
         if partner_index == 0:
-            status_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]} bid {winning_bid_name}"
-        else:
             status_string = f"{self.player_names[self.player_winning_bid]} bid {winning_bid_name}"
+        else:
+            status_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]} bid {winning_bid_name}"
 
         for i in range(5):
+            self.hands[i] = sort_card_list(self.hands[i], self.winning_bid[1])
             emit("round status", (status_string, self.hands[i]), room=self.player_sids[i])
 
         self.tricks_record = []
@@ -154,9 +155,11 @@ class Game:
             if str(i) in bid:
                 return i
 
-    def play(self, sid, card):
+    def play_card(self, sid, card):
         # Save the played card
-        self.trick_cards[self.player_sids.index(sid)] = card
+        player_index = self.player_sids.index(sid)
+        self.trick_cards[player_index] = card
+        self.hands[player_index].remove(card)
 
         # Is the round finished
         if len(self.trick_cards) == 5:

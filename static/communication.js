@@ -31,11 +31,17 @@ function setupSocketHandlers(socket) {
     document.getElementById("createGameButton").onclick = function(event) { socket.emit('lobby create'); };
     document.getElementById("leaveGameButton").onclick = function(event) { socket.emit('lobby exit'); };
     document.getElementById("kittyFinishedButton").onclick = function(event) {
-        // TODO get index of selected cards
-        // TODO get index of partner
-        // TODO check that selection is valid
+        selected_cards = document.querySelectorAll('img.cardPlayer0.selected');
+        if (selected_cards.length != 3) {return;}
+        discarded_kitty = Array.from(selected_cards).map(e => e.getAttribute("data"));
+        partner_cards = document.querySelectorAll('img.chosen');
+        if (partner_cards.length == 0){
+            partner_index = 0;
+        } else {
+            partner_index = parseInt(partner_cards[0].getAttribute("data"));
+        }
         document.getElementById("kittyButtonControl").hidden = true;
-        // socket.emit('kitty');
+        socket.emit('kitty', discarded_kitty, partner_index);
     };
 
     socket.on('lobby waiting', (players) => {
@@ -98,7 +104,6 @@ function setupSocketHandlers(socket) {
 
     socket.on('kitty request', (playerHand) => {
         document.getElementById("kittyButtonControl").hidden = false;
-        document.querySelectorAll('img.cardPlayer0').forEach(e => e.remove());
         images = drawHand(playerHand, 0);
 
         // Allow selecting and deselecting cards
@@ -124,15 +129,42 @@ function setupSocketHandlers(socket) {
             }));
         }
     });
+
+    socket.on('round status', (status_string, playerHand) => {
+        drawHand(playerHand, 0);
+        document.getElementById("statusString").textContent = status_string;
+    });
+
+    socket.on('play request', (current_trick_cards, hand_sizes, card_validity) => {
+        console.log(current_trick_cards)
+        console.log(hand_sizes)
+        console.log(card_validity)
+        document.querySelectorAll('img.trickCardImage').forEach(e => e.remove());
+        for (let i = 1; i < 5; i++) {
+            drawHand(Array(hand_sizes[i-1]).fill("back"), i);
+            if (current_trick_cards[i-1] !== ""){
+                drawPlayedCard(current_trick_cards[i-1], i);
+            }
+        }
+        playerCards = document.querySelectorAll('img.cardPlayer0')
+        for (let i=0; i < playerCards.length; i++){
+            if (card_validity[i]){
+                playerCards[i].onclick = function(event) {
+                    socket.emit('play', playerCards[i].getAttribute("data"));
+                };
+                playerCards[i].classList.add("playable")
+            }
+        }
+    });
 }
 
 function lobbyConnect() {
     if (connectionEnabled) {
         name = document.getElementById("playerNameInput").value
         if (name.trim().length > 1) {
+            connectionEnabled = false;
             socket = io({ query: { playerName: name.trim() } });
             setupSocketHandlers(socket)
         }
-        connectionEnabled = false;
     }
 }

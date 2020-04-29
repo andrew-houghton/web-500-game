@@ -8,6 +8,16 @@
     height: 200px;
 }
 
+#statusString {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    margin-top: -20px;
+    margin-left: -100px;
+    height: 40px;
+    width: 200px;
+}
+
 
 div.playerBidText {
     position: absolute;
@@ -39,6 +49,10 @@ button {
 
 img {
     position: absolute;
+}
+
+img.playable:hover {
+    border: 3px solid orange;
 }
 
 .selected {

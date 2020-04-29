@@ -1,10 +1,12 @@
+import os
+import uuid
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit, join_room, leave_room, rooms
 from game.game import Game
 
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "secret!"
+app.config["SECRET_KEY"] = os.environ.get('FLASK_SECRET_KEY', uuid.uuid4().hex)
 socketio = SocketIO(app, logger=True)
 
 games = []
@@ -97,7 +99,7 @@ def bid(bid):
 
 @socketio.on("kitty")
 def kitty(discarded_kitty, player_index):
-    player_games[request.sid].kitty(request.sid, discarded_kitty, player_index)
+    player_games[request.sid].handle_kitty(request.sid, discarded_kitty, player_index)
 
 @socketio.on("play")
 def play_card(card):
