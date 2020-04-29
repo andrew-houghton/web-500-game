@@ -65,15 +65,15 @@ def _get_card_number(bid_suit, card):
     return 11
 
 def winning_card_index(trick_cards, bid_suit, lead_index):
-    print(trick_cards, bid_suit, lead_index)
+    trick_cards = list(trick_cards.values())
     if bid_suit != 'n':
         trumps_played = [card for card in trick_cards if _get_card_suit(bid_suit, card) == bid_suit]
         if len(trumps_played) > 0:
-            winning_card = max(trumps_played, lambda card: _get_card_number(bid_suit, card, True))
+            winning_card = max(trumps_played, key=lambda card: _get_card_number(bid_suit, card))
             return trick_cards.index(winning_card)
 
     lead_suit = _get_card_suit(bid_suit, trick_cards[lead_index])
     cards_following_suit = [card for card in trick_cards if _get_card_suit(bid_suit, card) == lead_suit]
     # Return index of winning card following suit
-    winning_card = max(cards_following_suit, lambda card: get_card_number(bid_suit, card, True))
+    winning_card = max(cards_following_suit, key=lambda card: get_card_number(bid_suit, cards))
     return trick_cards.index(winning_card)
