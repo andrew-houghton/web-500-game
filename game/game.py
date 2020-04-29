@@ -169,7 +169,7 @@ class Game:
             self.trick_cards = {}
             self.lead_player = winner_index
 
-            if len(tricks_record) == 10:
+            if len(self.tricks_record) == 10:
                 self.end_round()
                 return
             else:
