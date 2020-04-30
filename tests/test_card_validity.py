@@ -24,6 +24,22 @@ def test_follow_suit():
     for i in range(len(test_cards)):
         assert is_card_valid(["", "", "", "heart_7"], "h", test_cards, i) == (i in valid_indices)
 
-def test_winner_index():
+def test_winner_index_trumps():
     trick_cards = {0: 'diamond_2', 1: 'diamond_king', 2: 'diamond_4', 3: 'diamond_3', 4: 'spade_4'}
     assert winning_card_index(trick_cards, 'd', 0) == 1
+
+def test_winner_index_trump_last():
+    trick_cards = {0: 'diamond_2', 1: 'diamond_king', 2: 'diamond_4', 3: 'diamond_3', 4: 'spade_4'}
+    assert winning_card_index(trick_cards, 's', 0) == 4
+
+def test_winner_index_off_suit():
+    trick_cards = {0: 'diamond_2', 1: 'diamond_king', 2: 'diamond_4', 3: 'diamond_3', 4: 'spade_4'}
+    assert winning_card_index(trick_cards, 'c', 0) == 1
+
+def test_winner_index_bower():
+    trick_cards = {0: 'diamond_2', 1: 'diamond_king', 2: 'heart_jack', 3: 'diamond_3', 4: 'spade_4'}
+    assert winning_card_index(trick_cards, 'd', 0) == 2
+
+def test_winner_index_joker():
+    trick_cards = {0: 'diamond_2', 1: 'diamond_king', 2: 'joker', 3: 'diamond_3', 4: 'spade_4'}
+    assert winning_card_index(trick_cards, 'c', 0) == 2
