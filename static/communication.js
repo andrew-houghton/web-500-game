@@ -1,5 +1,7 @@
 var connectionEnabled = true;
 
+var currentHand = null;
+
 function showScreen(screenName) {
     document.getElementById("connectionDetails").hidden = "connectionDetails" !== screenName;
     document.getElementById("gamesDetails").hidden = "gamesDetails" !== screenName;
@@ -132,36 +134,50 @@ function setupSocketHandlers(socket) {
 
     socket.on('round status', (status_string, playerHand) => {
         drawHand(playerHand, 0);
+        currentHand = playerHand;
         document.getElementById("statusString").textContent = status_string;
     });
 
-    socket.on('play request', (current_trick_cards, hand_sizes, card_validity) => {
-        console.log(current_trick_cards)
-        console.log(hand_sizes)
-        console.log(card_validity)
+    socket.on('play request', (currentTrickCards, handSizes, cardValidity) => {
         document.querySelectorAll('img.trickCardImage').forEach(e => e.remove());
         for (let i = 1; i < 5; i++) {
-            drawHand(Array(hand_sizes[i-1]).fill("back"), i);
-            if (current_trick_cards[i-1] !== ""){
-                drawPlayedCard(current_trick_cards[i-1], i);
+            drawHand(Array(handSizes[i-1]).fill("back"), i);
+            if (currentTrickCards[i] !== ""){
+                drawPlayedCard(currentTrickCards[i], i);
             }
         }
         playerCards = document.querySelectorAll('img.cardPlayer0')
         for (let i=0; i < playerCards.length; i++){
-            if (card_validity[i]){
+            if (cardValidity[i]){
                 playerCards[i].onclick = function(event) {
-                    socket.emit('play', playerCards[i].getAttribute("data"));
+                    playedCard = playerCards[i].getAttribute("data");
+                    socket.emit('play', playedCard);
+                    currentHand.splice(currentHand.indexOf(playedCard), 1);
+                    drawHand(currentHand, 0);
                 };
                 playerCards[i].classList.add("playable")
             }
         }
+    });
+
+    socket.on('play status', (currentTrickCards, currentPlayer, handSizes) => {
+        document.querySelectorAll('img.trickCardImage').forEach(e => e.remove());
+        for (let i = 0; i < 5; i++) {
+            if (i !== 0){
+                drawHand(Array(handSizes[i-1]).fill("back"), i);
+            }
+            if (currentTrickCards[i] !== ""){
+                drawPlayedCard(currentTrickCards[i], i);
+            }
+        }
+        document.getElementById("statusString").textContent = 'Waiting for '+currentPlayer+' to play';
     });
 }
 
 function lobbyConnect() {
     if (connectionEnabled) {
         name = document.getElementById("playerNameInput").value
-        if (name.trim().length > 1) {
+        if (name.trim().length >= 1) {
             connectionEnabled = false;
             socket = io({ query: { playerName: name.trim() } });
             setupSocketHandlers(socket)

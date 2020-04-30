@@ -19,7 +19,6 @@ def _get_card_suit(bid_suit, card):
 
 
 def is_card_valid(trick_cards, bid_suit, cards, index):
-    print(trick_cards, bid_suit, cards, index)
     # If the player is leading they can play any card
     if set(trick_cards) == {''}:
         return True
@@ -33,7 +32,6 @@ def is_card_valid(trick_cards, bid_suit, cards, index):
     card_suit = _get_card_suit(bid_suit, cards[index])
 
     # If they are following suit then card is valid
-    print(suit_lead, card_suit)
     if card_suit == suit_lead:
         return True
 
@@ -75,5 +73,5 @@ def winning_card_index(trick_cards, bid_suit, lead_index):
     lead_suit = _get_card_suit(bid_suit, trick_cards[lead_index])
     cards_following_suit = [card for card in trick_cards if _get_card_suit(bid_suit, card) == lead_suit]
     # Return index of winning card following suit
-    winning_card = max(cards_following_suit, key=lambda card: get_card_number(bid_suit, cards))
+    winning_card = max(cards_following_suit, key=lambda card: _get_card_number(bid_suit, card))
     return trick_cards.index(winning_card)

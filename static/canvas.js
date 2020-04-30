@@ -10,11 +10,11 @@ handLocations = [
     [0, 0.5, 90],
     [0.3, 0, 180],
     [0.7, 0, 180],
-    [1, 0.5, 270],
+    [1, 0.5, 270],  
 ];
 
 cardLocations = [
-    [0.5, 0.3, 0],
+    [0.5, 0.7, 0],
     [0.3, 0.5, 90],
     [0.3, 0.3, 180],
     [0.7, 0.3, 180],
@@ -30,7 +30,6 @@ function drawPlayedCard(card, playerId){
     blackHole[playerId].addEventListener('load', function() {
         let x = cardLocations[playerId][0] * window.innerWidth;
         let y = cardLocations[playerId][1] * window.innerHeight;
-        console.log(blackHole[playerId], x, y, cardLocations[playerId][2]);
         draw(blackHole[playerId], x, y, cardLocations[playerId][2]);
     });
     blackHole[playerId].src = "data:image/png;base64," + cardData[card];

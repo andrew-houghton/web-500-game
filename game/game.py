@@ -118,7 +118,9 @@ class Game:
     def handle_kitty(self, sid, discarded_kitty, partner_index):
         assert len(discarded_kitty) == 3
         self.partner_winning_bid = (self.player_winning_bid + partner_index) % 5
-        self.hands[self.player_winning_bid] = list(set(self.hands[self.player_winning_bid] + self.kitty) - set(discarded_kitty))
+        self.hands[self.player_winning_bid] = list(
+            set(self.hands[self.player_winning_bid] + self.kitty) - set(discarded_kitty)
+        )
 
         winning_bid_name = all_bids[self.winning_bid]["name"]
         if partner_index == 0:
@@ -138,17 +140,22 @@ class Game:
 
     def send_play_request(self):
         for i in range(5):
-            current_trick_cards = [self.trick_cards.get((i + j) % 5, "") for j in range(1, 5)]
+            current_trick_cards = [self.trick_cards.get((i + j) % 5, "") for j in range(0, 5)]
             hand_sizes = [len(self.hands[(i + j) % 5]) for j in range(1, 5)]
             card_validity = [
                 is_card_valid(current_trick_cards, self.winning_bid[1], self.hands[i], j)
                 for j in range(len(self.hands[i]))
             ]
+            assert any(card_validity), f"{current_trick_cards}, {self.winning_bid}, {self.hands[i]}"
 
             if i == (self.lead_player + len(self.trick_cards)) % 5:
                 emit("play request", (current_trick_cards, hand_sizes, card_validity), room=self.player_sids[i])
             else:
-                emit("play status", (current_trick_cards, self.player_names[i]), room=self.player_sids[i])
+                emit(
+                    "play status",
+                    (current_trick_cards, self.player_names[i], hand_sizes),
+                    room=self.player_sids[i],
+                )
 
     def get_bid_number(bid):
         for i in range(6, 11):
@@ -176,7 +183,10 @@ class Game:
                 for i in range(5):
                     emit(
                         "play trick",
-                        ((self.winner_index + i) % 5, self.attacking_tricks, self.defending_tricks),
+                        (
+                            self.player_names[winner_index],
+                            [(self.player_names[(i + j) % 5], self.tricks_won[(i + j) % 5]) for j in range(5)],
+                        ),
                         room=self.player_sids[i],
                     )
 
