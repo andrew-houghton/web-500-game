@@ -5,6 +5,7 @@ from collections import defaultdict
 from flask_socketio import emit
 from game.card_sorting import sort_card_list
 from game.card_validity import is_card_valid, winning_card_index
+import threading
 
 
 class Game:
@@ -81,7 +82,7 @@ class Game:
             if i == self.player_to_bid:
                 emit("bid request", (previous_bids, self.valid_bids), room=self.player_sids[i])
             else:
-                emit("bid status", (previous_bids, self.player_names[i]), room=self.player_sids[i])
+                emit("bid status", (previous_bids, self.player_names[self.player_to_bid]), room=self.player_sids[i])
 
     def send_kitty(self):
         player_winning_bid_name = self.player_names[self.player_winning_bid]
@@ -94,7 +95,7 @@ class Game:
                     room=self.player_sids[i],
                 )
             else:
-                emit("kitty status", (player_winning_bid_name, self.winning_bid), room=self.player_sids[i])
+                emit("kitty status", (player_winning_bid_name, all_bids[self.winning_bid]["name"]), room=self.player_sids[i])
 
     def bid(self, sid, bid):
         self.bids[self.player_sids.index(sid)] = bid
@@ -148,12 +149,13 @@ class Game:
             ]
             assert any(card_validity), f"{current_trick_cards}, {self.winning_bid}, {self.hands[i]}"
 
+            bidding_player_name = self.player_names[(self.lead_player + len(self.trick_cards)) % 5]
             if i == (self.lead_player + len(self.trick_cards)) % 5:
                 emit("play request", (current_trick_cards, hand_sizes, card_validity), room=self.player_sids[i])
             else:
                 emit(
                     "play status",
-                    (current_trick_cards, self.player_names[i], hand_sizes),
+                    (current_trick_cards, bidding_player_name, hand_sizes),
                     room=self.player_sids[i],
                 )
 
@@ -162,35 +164,44 @@ class Game:
             if str(i) in bid:
                 return i
 
-    def play_card(self, sid, card):
+    def play_card(self, sid, card, socketio):
         # Save the played card
         player_index = self.player_sids.index(sid)
         self.trick_cards[player_index] = card
         self.hands[player_index].remove(card)
 
         # Is the round finished
-        if len(self.trick_cards) == 5:
-            winner_index = winning_card_index(self.trick_cards, self.winning_bid[1], self.lead_player)
-            self.tricks_won[winner_index] += 1
-            self.tricks_record.append(self.trick_cards)
-            self.trick_cards = {}
-            self.lead_player = winner_index
+        if len(self.trick_cards) < 5:
+            self.send_play_request()
+            return
 
-            if len(self.tricks_record) == 10:
-                self.end_round()
-                return
-            else:
-                for i in range(5):
-                    emit(
-                        "play trick",
-                        (
-                            self.player_names[winner_index],
-                            [(self.player_names[(i + j) % 5], self.tricks_won[(i + j) % 5]) for j in range(5)],
-                        ),
-                        room=self.player_sids[i],
-                    )
+        winner_index = winning_card_index(self.trick_cards, self.winning_bid[1], self.lead_player)
+        self.tricks_won[winner_index] += 1
+        self.tricks_record.append(self.trick_cards)
+        self.lead_player = winner_index
 
-        self.send_play_request()
+        for i in range(5):
+            emit(
+                "play trick",
+                (
+                    [self.trick_cards.get((i + j) % 5, "") for j in range(0, 5)],
+                    self.player_names[winner_index],
+                    [(self.player_names[(i + j) % 5], self.tricks_won[(i + j) % 5]) for j in range(5)],
+                ),
+                room=self.player_sids[i],
+            )
+        socketio.sleep(0)
+        self.trick_cards = {}
+
+        thread = threading.Thread(target=socketio.sleep, args=(4,))
+        thread.start()
+        thread.join()
+
+        if len(self.tricks_record) == 10:
+            self.end_round()
+        else:
+            self.send_play_request()
+
 
     def end_round(self):
         # Check if players got more tricks than bid

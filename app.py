@@ -103,7 +103,7 @@ def kitty(discarded_kitty, player_index):
 
 @socketio.on("play")
 def play_card(card):
-    player_games[request.sid].play_card(request.sid, card)
+    player_games[request.sid].play_card(request.sid, card, socketio)
 
 @socketio.on("round again")
 def round_again():

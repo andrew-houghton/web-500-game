@@ -95,6 +95,7 @@ function setupSocketHandlers(socket) {
             var bidTextElement = document.getElementById("player" + i + "Bid");
             bidTextElement.textContent = previousBids[i];
         }
+        document.getElementById("statusString").textContent = "Waiting you to bid";
     });
 
     socket.on('bid status', (previousBids, biddingPlayerName) => {
@@ -102,6 +103,7 @@ function setupSocketHandlers(socket) {
             var bidTextElement = document.getElementById("player" + i + "Bid");
             bidTextElement.textContent = previousBids[i];
         }
+        document.getElementById("statusString").textContent = "Waiting for "+biddingPlayerName+" to bid";
     });
 
     socket.on('kitty request', (playerHand) => {
@@ -129,6 +131,19 @@ function setupSocketHandlers(socket) {
                     document.querySelectorAll('img.cardPlayer' + playerId).forEach(j => j.classList.add("chosen"))   
                 }
             }));
+        }
+
+        document.getElementById("statusString").textContent = "Select partner and discard kitty";
+        bidTextElements = document.querySelectorAll(".playerBidText :nth-child(2)");
+        for (let i = 0; i < bidTextElements.length; i++) {
+            bidTextElements[i].textContent = "";
+        }
+    });
+    socket.on('kitty status', (biddingPlayerName, winningBid) => {
+        document.getElementById("statusString").textContent = biddingPlayerName+ " won the bidding with "+winningBid;
+        bidTextElements = document.querySelectorAll(".playerBidText :nth-child(2)");
+        for (let i = 0; i < bidTextElements.length; i++) {
+            bidTextElements[i].textContent = "";
         }
     });
 
@@ -158,6 +173,7 @@ function setupSocketHandlers(socket) {
                 playerCards[i].classList.add("playable")
             }
         }
+        document.getElementById("statusString").textContent = "Waiting you to play";
     });
 
     socket.on('play status', (currentTrickCards, currentPlayer, handSizes) => {
@@ -171,6 +187,15 @@ function setupSocketHandlers(socket) {
             }
         }
         document.getElementById("statusString").textContent = 'Waiting for '+currentPlayer+' to play';
+    });
+
+    socket.on('play trick', (currentTrickCards, winningPlayer, tricksWon) => {
+        document.getElementById("statusString").textContent = winningPlayer + ' won the trick';
+        for (let i = 0; i < 5; i++) {
+            if (currentTrickCards[i] !== ""){
+                drawPlayedCard(currentTrickCards[i], i);
+            }
+        }
     });
 }
 
