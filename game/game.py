@@ -95,7 +95,11 @@ class Game:
                     room=self.player_sids[i],
                 )
             else:
-                emit("kitty status", (player_winning_bid_name, all_bids[self.winning_bid]["name"]), room=self.player_sids[i])
+                emit(
+                    "kitty status",
+                    (player_winning_bid_name, all_bids[self.winning_bid]["name"]),
+                    room=self.player_sids[i],
+                )
 
     def bid(self, sid, bid):
         self.bids[self.player_sids.index(sid)] = bid
@@ -153,11 +157,7 @@ class Game:
             if i == (self.lead_player + len(self.trick_cards)) % 5:
                 emit("play request", (current_trick_cards, hand_sizes, card_validity), room=self.player_sids[i])
             else:
-                emit(
-                    "play status",
-                    (current_trick_cards, bidding_player_name, hand_sizes),
-                    room=self.player_sids[i],
-                )
+                emit("play status", (current_trick_cards, bidding_player_name, hand_sizes), room=self.player_sids[i])
 
     def get_bid_number(bid):
         for i in range(6, 11):
@@ -201,7 +201,6 @@ class Game:
             self.end_round()
         else:
             self.send_play_request()
-
 
     def end_round(self):
         # Check if players got more tricks than bid
