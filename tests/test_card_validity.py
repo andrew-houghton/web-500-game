@@ -51,6 +51,11 @@ def test_winner_index_joker():
     assert winning_card_index(trick_cards, "c", 0) == 2
 
 
+def test_winner_index_royals():
+    trick_cards = {0: "diamond_2", 1: "diamond_jack", 2: "diamond_ace", 3: "diamond_3", 4: "spade_4"}
+    assert winning_card_index(trick_cards, "d", 0) == 1
+
+
 def test_card_validity():
     trick_cards = ["diamond_6", "", "", "diamond_9", "diamond_5"]
     hand_cards = ["spade_7", "spade_ace", "heart_3", "heart_jack", "club_9", "club_king", "spade_jack"]

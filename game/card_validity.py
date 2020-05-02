@@ -49,17 +49,16 @@ def _get_card_number(bid_suit, card):
         return int(number)
 
     # Only face cards remaining now
-    number_mappings = {"queen": 12, "king": 13, "ace": 16}
+    number_mappings = {"queen": 12, "king": 13, "ace": 14}
     if number in number_mappings:
         return number_mappings[number]
-
     # Handle jacks
     card_suit = _get_card_suit(bid_suit, card)
     if bid_suit == card_suit:
         if card[0] == bid_suit:
-            return 15
+            return 16
         else:
-            return 14
+            return 15
     return 11
 
 def winning_card_index(trick_cards, bid_suit, lead_index):
