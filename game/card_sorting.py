@@ -7,7 +7,7 @@ def _get_card_suit_and_number(card):
 
     suit, number = card.split("_")
 
-    number_mappings = {"jack": 11, "queen": 12, "king": 13, "ace": 16}
+    number_mappings = {"jack": 11, "queen": 12, "king": 13, "ace": 14}
     if number.isdigit():
         number = int(number)
     else:
@@ -23,9 +23,9 @@ def _convert_to_sorting_order(suit, card_suit, number):
     # Deal with bowers
     if suit != "n" and number == 11:
         if matching_suit[suit] == card_suit:
-            number = 15
+            number = 16
         elif paired_suit[suit] == card_suit:
-            number = 14
+            number = 15
             card_suit = matching_suit[suit]
 
     suit_orderings = {

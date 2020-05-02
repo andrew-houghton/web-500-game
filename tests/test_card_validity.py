@@ -27,32 +27,32 @@ def test_follow_suit():
 
 
 def test_winner_index_trumps():
-    trick_cards = {0: "diamond_2", 1: "diamond_king", 2: "diamond_4", 3: "diamond_3", 4: "spade_4"}
+    trick_cards = ["diamond_2", "diamond_king", "diamond_4", "diamond_3", "spade_4"]
     assert winning_card_index(trick_cards, "d", 0) == 1
 
 
 def test_winner_index_trump_last():
-    trick_cards = {0: "diamond_2", 1: "diamond_king", 2: "diamond_4", 3: "diamond_3", 4: "spade_4"}
+    trick_cards = ["diamond_2", "diamond_king", "diamond_4", "diamond_3", "spade_4"]
     assert winning_card_index(trick_cards, "s", 0) == 4
 
 
 def test_winner_index_off_suit():
-    trick_cards = {0: "diamond_2", 1: "diamond_king", 2: "diamond_4", 3: "diamond_3", 4: "spade_4"}
+    trick_cards = ["diamond_2", "diamond_king", "diamond_4", "diamond_3", "spade_4"]
     assert winning_card_index(trick_cards, "c", 0) == 1
 
 
 def test_winner_index_bower():
-    trick_cards = {0: "diamond_2", 1: "diamond_king", 2: "heart_jack", 3: "diamond_3", 4: "spade_4"}
+    trick_cards = ["diamond_2", "diamond_king", "heart_jack", "diamond_3", "spade_4"]
     assert winning_card_index(trick_cards, "d", 0) == 2
 
 
 def test_winner_index_joker():
-    trick_cards = {0: "diamond_2", 1: "diamond_king", 2: "joker", 3: "diamond_3", 4: "spade_4"}
+    trick_cards = ["diamond_2", "diamond_king", "joker", "diamond_3", "spade_4"]
     assert winning_card_index(trick_cards, "c", 0) == 2
 
 
 def test_winner_index_royals():
-    trick_cards = {0: "diamond_2", 1: "diamond_jack", 2: "diamond_ace", 3: "diamond_3", 4: "spade_4"}
+    trick_cards = ["diamond_2", "diamond_jack", "diamond_ace", "diamond_3", "spade_4"]
     assert winning_card_index(trick_cards, "d", 0) == 1
 
 

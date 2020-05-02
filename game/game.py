@@ -160,11 +160,6 @@ class Game:
             else:
                 emit("play status", (current_trick_cards, bidding_player_name, hand_sizes), room=self.player_sids[i])
 
-    def get_bid_number(bid):
-        for i in range(6, 11):
-            if str(i) in bid:
-                return i
-
     def play_card(self, sid, card, socketio):
         # Save the played card
         player_index = self.player_sids.index(sid)
@@ -176,7 +171,7 @@ class Game:
             self.send_play_request()
             return
 
-        winner_index = winning_card_index(self.trick_cards, self.winning_bid[1], self.lead_player)
+        winner_index = winning_card_index([self.trick_cards[i] for i in range(5)], self.winning_bid[1], self.lead_player)
         self.tricks_won[winner_index] += 1
         self.tricks_record.append(self.trick_cards)
         self.lead_player = winner_index
@@ -191,48 +186,67 @@ class Game:
                 ),
                 room=self.player_sids[i],
             )
-        socketio.sleep(0)
         self.trick_cards = {}
 
+        socketio.sleep(0)
         thread = threading.Thread(target=socketio.sleep, args=(2,))
         thread.start()
         thread.join()
 
         if len(self.tricks_record) == 10:
-            self.end_round()
+            self.end_round(socketio)
         else:
             self.send_play_request()
 
-    def end_round(self):
+    @staticmethod
+    def get_bid_number(bid):
+        for i in range(6, 11):
+            if str(i) in bid:
+                return i
+
+    def end_round(self, socketio):
         # Check if players got more tricks than bid
         attacking_tricks = self.tricks_won[self.player_winning_bid]
         if self.partner_winning_bid != self.player_winning_bid:
             attacking_tricks += self.tricks_won[self.player_winning_bid]
-        bid_made = attacking_tricks >= get_bid_number(self.winning_bid)
+        bid_made = attacking_tricks >= self.get_bid_number(self.winning_bid)
+
+        # Deal with 250 points for slam
+        if bid_made and attacking_tricks == 10:
+            bid_points = max(all_bids[self.winning_bid]["points"], 250)
+        else:
+            bid_points = all_bids[self.winning_bid]["points"]
+
+        # Deal with splitting points between attacking players
+        if self.partner_winning_bid != self.player_winning_bid:
+            attacker_points = bid_points / 2
+        else:
+            attacker_points = bid_points
 
         # Update point totals
-        points_earnt = []
-        if self.partner_winning_bid != self.player_winning_bid:
-            attacker_points = all_bids[self.winning_bid]["points"] / 2
-        else:
-            attacker_points = all_bids[self.winning_bid]["points"]
-        if not bid_made:
-            attacker_points = -attacker_points
-
         for i in range(5):
             if i in (self.partner_winning_bid, self.player_winning_bid):
-                points_earnt.append(attacker_points)
+                if bid_made:
+                    self.points[i] +=attacker_points
+                else:
+                    self.points[i] -= attacker_points
             else:
-                points_earnt.append(10 * self.tricks_won[i])
-            self.points[i] += points_earnt[i]
+                self.points[i] += 10 * self.tricks_won[i]
 
         made_not_made_string = "made" if bid_made else "didn't make"
         winning_bid_name = all_bids[self.winning_bid]["name"]
         if self.partner_winning_bid != self.player_winning_bid:
             status_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]} {made_not_made_string} {winning_bid_name}"
         else:
-            status_string = f"{self.player_names[self.player_winning_bid]} {bid} {winning_bid_name}"
+            status_string = f"{self.player_names[self.player_winning_bid]} {made_not_made_string} {winning_bid_name}"
 
         for i in range(5):
-            emit("round result", (status_string, points_earnt), room=self.player_sids[i])
+            player_points = [self.points[(i+j)%5] for j in range(5)]
+            emit("round result", (status_string, player_points), room=self.player_sids[i])
+
+        socketio.sleep()
+        thread = threading.Thread(target=socketio.sleep, args=(3,))
+        thread.start()
+        thread.join()
+
         self.start_round()

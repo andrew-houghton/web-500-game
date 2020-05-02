@@ -149,10 +149,10 @@ function setupSocketHandlers(socket) {
         }
     });
 
-    socket.on('round status', (status_string, playerHand) => {
+    socket.on('round status', (statusString, playerHand) => {
         drawHand(playerHand, 0);
         currentHand = playerHand;
-        document.getElementById("statusString").textContent = status_string;
+        document.getElementById("statusString").textContent = statusString;
         for (let i = 0; i < 5; i++) {
             document.getElementById("player" + i + "Tricks").textContent = " - 0";
         }
@@ -205,6 +205,10 @@ function setupSocketHandlers(socket) {
         for (let i = 0; i < 5; i++) {
             document.getElementById("player" + i + "Tricks").textContent = " - "+tricksWon[i];
         }
+    });
+
+    socket.on('round result', (statusString, points) => {
+        document.getElementById("statusString").textContent = statusString;
     });
 }
 

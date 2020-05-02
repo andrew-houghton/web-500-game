@@ -62,7 +62,6 @@ def _get_card_number(bid_suit, card):
     return 11
 
 def winning_card_index(trick_cards, bid_suit, lead_index):
-    trick_cards = list(trick_cards.values())
     if bid_suit != 'n':
         trumps_played = [card for card in trick_cards if _get_card_suit(bid_suit, card) == bid_suit]
         if len(trumps_played) > 0:
