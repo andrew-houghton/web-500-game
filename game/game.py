@@ -249,4 +249,30 @@ class Game:
         thread.start()
         thread.join()
 
-        self.start_round()
+        winning_players = [i for i in range(5) if self.points[i] >= 500]
+        losing_players = [i for i in range(5) if self.points[i] >= 500]
+        if self.player_winning_bid in winning_players or self.partner_winning_bid in winning_players:
+            self.end_game(winners=winning_players)
+        elif losing_players:
+            self.enend_gamed_game(losers=losing_players)
+        else:
+            self.start_round()
+
+    def end_game(self, winners=None, losers=None):
+        print("Game ended")
+        if winners:
+            if self.partner_winning_bid in winners and self.player_winning_bid in winners:
+                status_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]} won!"
+            elif self.player_winning_bid in winners:
+                status_string = f"{self.player_names[self.player_winning_bid]} won!"
+            elif self.partner_winning_bid in winners:
+                status_string = f"{self.player_names[self.partner_winning_bid]} won!"
+        else:
+            if self.partner_winning_bid in losers and self.player_winning_bid in losers:
+                status_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]} lost!"
+            elif self.player_winning_bid in losers:
+                status_string = f"{self.player_names[self.player_winning_bid]} lost!"
+            elif self.partner_winning_bid in losers:
+                status_string = f"{self.player_names[self.partner_winning_bid]} lost!"
+
+        emit("round complete", status_string, room=self.player_sids[i])

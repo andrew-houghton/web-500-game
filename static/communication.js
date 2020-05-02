@@ -210,6 +210,10 @@ function setupSocketHandlers(socket) {
     socket.on('round result', (statusString, points) => {
         document.getElementById("statusString").textContent = statusString;
     });
+
+    socket.on('round complete', (statusString) => {
+        document.getElementById("statusString").textContent = statusString;
+    });
 }
 
 function lobbyConnect() {
