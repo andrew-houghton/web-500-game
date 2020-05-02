@@ -208,7 +208,7 @@ class Game:
         # Check if players got more tricks than bid
         attacking_tricks = self.tricks_won[self.player_winning_bid]
         if self.partner_winning_bid != self.player_winning_bid:
-            attacking_tricks += self.tricks_won[self.player_winning_bid]
+            attacking_tricks += self.tricks_won[self.partner_winning_bid]
         bid_made = attacking_tricks >= self.get_bid_number(self.winning_bid)
 
         # Deal with 250 points for slam
