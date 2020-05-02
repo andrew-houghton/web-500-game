@@ -34,10 +34,10 @@ function setupSocketHandlers(socket) {
     document.getElementById("leaveGameButton").onclick = function(event) { socket.emit('lobby exit'); };
     document.getElementById("kittyFinishedButton").onclick = function(event) {
         selected_cards = document.querySelectorAll('img.cardPlayer0.selected');
-        if (selected_cards.length != 3) {return;}
+        if (selected_cards.length != 3) { return; }
         discarded_kitty = Array.from(selected_cards).map(e => e.getAttribute("data"));
         partner_cards = document.querySelectorAll('img.chosen');
-        if (partner_cards.length == 0){
+        if (partner_cards.length == 0) {
             partner_index = 0;
         } else {
             partner_index = parseInt(partner_cards[0].getAttribute("data"));
@@ -67,7 +67,7 @@ function setupSocketHandlers(socket) {
             drawHand(Array(10).fill("back"), i);
         }
 
-        for (let i=0; i< playerNames.length; i++) {
+        for (let i = 0; i < playerNames.length; i++) {
             document.getElementById("player" + i + "Name").textContent = playerNames[i];
             document.getElementById("player" + i + "ScoreName").textContent = playerNames[i];
             document.getElementById("player" + i + "Score").textContent = points[i];
@@ -95,7 +95,7 @@ function setupSocketHandlers(socket) {
                 button.onclick = null;
             }
         }
-        for (let i=0; i< previousBids.length; i++) {
+        for (let i = 0; i < previousBids.length; i++) {
             var bidTextElement = document.getElementById("player" + i + "Bid");
             bidTextElement.textContent = previousBids[i];
         }
@@ -103,14 +103,14 @@ function setupSocketHandlers(socket) {
     });
 
     socket.on('bid status', (previousBids, biddingPlayerName) => {
-        for (let i=0; i< previousBids.length; i++) {
+        for (let i = 0; i < previousBids.length; i++) {
             var bidTextElement = document.getElementById("player" + i + "Bid");
             bidTextElement.textContent = previousBids[i];
         }
-        document.getElementById("statusString").textContent = "Waiting for "+biddingPlayerName+" to bid";
+        document.getElementById("statusString").textContent = "Waiting for " + biddingPlayerName + " to bid";
     });
 
-    socket.on('kitty request', (playerHand, winningBid) => {
+    socket.on('kitty request', (biddingPlayerName, biddingPartnerName, playerHand, winningBid) => {
         document.getElementById("kittyButtonControl").hidden = false;
         images = drawHand(playerHand, 0);
 
@@ -132,7 +132,7 @@ function setupSocketHandlers(socket) {
                     document.querySelectorAll('img.chosen').forEach(j => j.classList.remove("chosen"))
                 } else {
                     document.querySelectorAll('img.chosen').forEach(j => j.classList.remove("chosen"))
-                    document.querySelectorAll('img.cardPlayer' + playerId).forEach(j => j.classList.add("chosen"))   
+                    document.querySelectorAll('img.cardPlayer' + playerId).forEach(j => j.classList.add("chosen"))
                 }
             }));
         }
@@ -142,14 +142,24 @@ function setupSocketHandlers(socket) {
         for (let i = 0; i < bidTextElements.length; i++) {
             bidTextElements[i].textContent = "";
         }
+        if (biddingPartnerName == "") {
+            document.getElementById("currentBidders").textContent = biddingPlayerName;
+        } else {
+            document.getElementById("currentBidders").textContent = biddingPlayerName + " and " + biddingPartnerName;
+        }
         document.getElementById("currentBid").textContent = winningBid;
     });
 
-    socket.on('kitty status', (biddingPlayerName, winningBid) => {
-        document.getElementById("statusString").textContent = biddingPlayerName+ " won the bidding with "+winningBid;
+    socket.on('kitty status', (biddingPlayerName, biddingPartnerName, winningBid) => {
+        document.getElementById("statusString").textContent = biddingPlayerName + " won " + winningBid + ". Waiting for " + biddingPlayerName + " to discard";
         bidTextElements = document.querySelectorAll(".playerBidText :nth-child(2)");
         for (let i = 0; i < bidTextElements.length; i++) {
             bidTextElements[i].textContent = "";
+        }
+        if (biddingPartnerName == "") {
+            document.getElementById("currentBidders").textContent = biddingPlayerName;
+        } else {
+            document.getElementById("currentBidders").textContent = biddingPlayerName + " and " + biddingPartnerName;
         }
         document.getElementById("currentBid").textContent = winningBid;
     });
@@ -166,14 +176,14 @@ function setupSocketHandlers(socket) {
     socket.on('play request', (currentTrickCards, handSizes, cardValidity) => {
         document.querySelectorAll('img.trickCardImage').forEach(e => e.remove());
         for (let i = 1; i < 5; i++) {
-            drawHand(Array(handSizes[i-1]).fill("back"), i);
-            if (currentTrickCards[i] !== ""){
+            drawHand(Array(handSizes[i - 1]).fill("back"), i);
+            if (currentTrickCards[i] !== "") {
                 drawPlayedCard(currentTrickCards[i], i);
             }
         }
         playerCards = document.querySelectorAll('img.cardPlayer0')
-        for (let i=0; i < playerCards.length; i++){
-            if (cardValidity[i]){
+        for (let i = 0; i < playerCards.length; i++) {
+            if (cardValidity[i]) {
                 playerCards[i].onclick = function(event) {
                     playedCard = playerCards[i].getAttribute("data");
                     socket.emit('play', playedCard);
@@ -189,26 +199,26 @@ function setupSocketHandlers(socket) {
     socket.on('play status', (currentTrickCards, currentPlayer, handSizes) => {
         document.querySelectorAll('img.trickCardImage').forEach(e => e.remove());
         for (let i = 0; i < 5; i++) {
-            if (i !== 0){
-                drawHand(Array(handSizes[i-1]).fill("back"), i);
+            if (i !== 0) {
+                drawHand(Array(handSizes[i - 1]).fill("back"), i);
             }
-            if (currentTrickCards[i] !== ""){
+            if (currentTrickCards[i] !== "") {
                 drawPlayedCard(currentTrickCards[i], i);
             }
         }
-        document.getElementById("statusString").textContent = 'Waiting for '+currentPlayer+' to play';
+        document.getElementById("statusString").textContent = 'Waiting for ' + currentPlayer + ' to play';
     });
 
     socket.on('play trick', (currentTrickCards, winningPlayer, tricksWon) => {
         document.getElementById("statusString").textContent = winningPlayer + ' won the trick';
         for (let i = 0; i < 5; i++) {
-            if (currentTrickCards[i] !== ""){
+            if (currentTrickCards[i] !== "") {
                 drawPlayedCard(currentTrickCards[i], i);
             }
         }
 
         for (let i = 0; i < 5; i++) {
-            document.getElementById("player" + i + "Tricks").textContent = " - "+tricksWon[i];
+            document.getElementById("player" + i + "Tricks").textContent = " - " + tricksWon[i];
         }
     });
 
@@ -217,6 +227,7 @@ function setupSocketHandlers(socket) {
         for (let i = 0; i < 5; i++) {
             document.getElementById("player" + i + "Score").textContent = points[i];
         }
+        document.getElementById("currentBidders").textContent = "";
         document.getElementById("currentBid").textContent = "";
     });
 
