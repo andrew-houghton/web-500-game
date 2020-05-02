@@ -2,3 +2,4 @@ flask-socketio
 requests
 eventlet
 pillow
+gunicorn
