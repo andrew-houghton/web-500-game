@@ -151,7 +151,8 @@ class Game:
                 is_card_valid(current_trick_cards, self.winning_bid[1], self.hands[i], j)
                 for j in range(len(self.hands[i]))
             ]
-            assert any(card_validity), f"{current_trick_cards}, {self.winning_bid}, {self.hands[i]}"
+            if card_validity:
+                assert any(card_validity), f"{current_trick_cards}, {self.winning_bid}, {self.hands[i]}"
 
             bidding_player_name = self.player_names[(self.lead_player + len(self.trick_cards)) % 5]
             if i == (self.lead_player + len(self.trick_cards)) % 5:
@@ -193,7 +194,7 @@ class Game:
         socketio.sleep(0)
         self.trick_cards = {}
 
-        thread = threading.Thread(target=socketio.sleep, args=(4,))
+        thread = threading.Thread(target=socketio.sleep, args=(2,))
         thread.start()
         thread.join()
 

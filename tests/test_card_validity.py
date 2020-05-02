@@ -13,6 +13,7 @@ test_cards = [
     "club_4",
 ]
 
+
 def test_nothing_played():
     for i in range(10):
         for suit in "scdhn":
@@ -24,29 +25,35 @@ def test_follow_suit():
     for i in range(len(test_cards)):
         assert is_card_valid(["", "", "", "heart_7"], "h", test_cards, i) == (i in valid_indices)
 
+
 def test_winner_index_trumps():
-    trick_cards = {0: 'diamond_2', 1: 'diamond_king', 2: 'diamond_4', 3: 'diamond_3', 4: 'spade_4'}
-    assert winning_card_index(trick_cards, 'd', 0) == 1
+    trick_cards = {0: "diamond_2", 1: "diamond_king", 2: "diamond_4", 3: "diamond_3", 4: "spade_4"}
+    assert winning_card_index(trick_cards, "d", 0) == 1
+
 
 def test_winner_index_trump_last():
-    trick_cards = {0: 'diamond_2', 1: 'diamond_king', 2: 'diamond_4', 3: 'diamond_3', 4: 'spade_4'}
-    assert winning_card_index(trick_cards, 's', 0) == 4
+    trick_cards = {0: "diamond_2", 1: "diamond_king", 2: "diamond_4", 3: "diamond_3", 4: "spade_4"}
+    assert winning_card_index(trick_cards, "s", 0) == 4
+
 
 def test_winner_index_off_suit():
-    trick_cards = {0: 'diamond_2', 1: 'diamond_king', 2: 'diamond_4', 3: 'diamond_3', 4: 'spade_4'}
-    assert winning_card_index(trick_cards, 'c', 0) == 1
+    trick_cards = {0: "diamond_2", 1: "diamond_king", 2: "diamond_4", 3: "diamond_3", 4: "spade_4"}
+    assert winning_card_index(trick_cards, "c", 0) == 1
+
 
 def test_winner_index_bower():
-    trick_cards = {0: 'diamond_2', 1: 'diamond_king', 2: 'heart_jack', 3: 'diamond_3', 4: 'spade_4'}
-    assert winning_card_index(trick_cards, 'd', 0) == 2
+    trick_cards = {0: "diamond_2", 1: "diamond_king", 2: "heart_jack", 3: "diamond_3", 4: "spade_4"}
+    assert winning_card_index(trick_cards, "d", 0) == 2
+
 
 def test_winner_index_joker():
-    trick_cards = {0: 'diamond_2', 1: 'diamond_king', 2: 'joker', 3: 'diamond_3', 4: 'spade_4'}
-    assert winning_card_index(trick_cards, 'c', 0) == 2
+    trick_cards = {0: "diamond_2", 1: "diamond_king", 2: "joker", 3: "diamond_3", 4: "spade_4"}
+    assert winning_card_index(trick_cards, "c", 0) == 2
+
 
 def test_card_validity():
-    trick_cards = ['diamond_6', '', '', 'diamond_9', 'diamond_5']
-    hand_cards = ['spade_7', 'spade_ace', 'heart_3', 'heart_jack', 'club_9', 'club_king', 'spade_jack']
+    trick_cards = ["diamond_6", "", "", "diamond_9", "diamond_5"]
+    hand_cards = ["spade_7", "spade_ace", "heart_3", "heart_jack", "club_9", "club_king", "spade_jack"]
 
     for i in range(len(hand_cards)):
         assert is_card_valid(trick_cards, "c", hand_cards, i)
