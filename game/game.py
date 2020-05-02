@@ -91,7 +91,7 @@ class Game:
             if i == self.player_winning_bid:
                 emit(
                     "kitty request",
-                    sort_card_list(self.kitty + self.hands[self.player_winning_bid], self.winning_bid[1]),
+                    sort_card_list(self.kitty + self.hands[self.player_winning_bid], self.winning_bid[-1]),
                     room=self.player_sids[i],
                 )
             else:
@@ -134,7 +134,7 @@ class Game:
             status_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]} bid {winning_bid_name}"
 
         for i in range(5):
-            self.hands[i] = sort_card_list(self.hands[i], self.winning_bid[1])
+            self.hands[i] = sort_card_list(self.hands[i], self.winning_bid[-1])
             emit("round status", (status_string, self.hands[i]), room=self.player_sids[i])
 
         self.tricks_record = []
@@ -148,7 +148,7 @@ class Game:
             current_trick_cards = [self.trick_cards.get((i + j) % 5, "") for j in range(0, 5)]
             hand_sizes = [len(self.hands[(i + j) % 5]) for j in range(1, 5)]
             card_validity = [
-                is_card_valid(current_trick_cards, self.winning_bid[1], self.hands[i], j)
+                is_card_valid(current_trick_cards, self.winning_bid[-1], self.hands[i], j)
                 for j in range(len(self.hands[i]))
             ]
             if card_validity:
@@ -171,7 +171,9 @@ class Game:
             self.send_play_request()
             return
 
-        winner_index = winning_card_index([self.trick_cards[i] for i in range(5)], self.winning_bid[1], self.lead_player)
+        winner_index = winning_card_index(
+            [self.trick_cards[i] for i in range(5)], self.winning_bid[-1], self.lead_player
+        )
         self.tricks_won[winner_index] += 1
         self.tricks_record.append(self.trick_cards)
         self.lead_player = winner_index
@@ -227,7 +229,7 @@ class Game:
         for i in range(5):
             if i in (self.partner_winning_bid, self.player_winning_bid):
                 if bid_made:
-                    self.points[i] +=attacker_points
+                    self.points[i] += attacker_points
                 else:
                     self.points[i] -= attacker_points
             else:
@@ -241,7 +243,7 @@ class Game:
             status_string = f"{self.player_names[self.player_winning_bid]} {made_not_made_string} {winning_bid_name}"
 
         for i in range(5):
-            player_points = [self.points[(i+j)%5] for j in range(5)]
+            player_points = [self.points[(i + j) % 5] for j in range(5)]
             emit("round result", (status_string, player_points), room=self.player_sids[i])
 
         socketio.sleep()
@@ -250,29 +252,38 @@ class Game:
         thread.join()
 
         winning_players = [i for i in range(5) if self.points[i] >= 500]
-        losing_players = [i for i in range(5) if self.points[i] >= 500]
+        losing_players = [i for i in range(5) if self.points[i] <= -500]
         if self.player_winning_bid in winning_players or self.partner_winning_bid in winning_players:
             self.end_game(winners=winning_players)
         elif losing_players:
-            self.enend_gamed_game(losers=losing_players)
+            self.end_game(losers=losing_players)
         else:
             self.start_round()
 
     def end_game(self, winners=None, losers=None):
         print("Game ended")
         if winners:
-            if self.partner_winning_bid in winners and self.player_winning_bid in winners:
+            if (
+                self.player_winning_bid != self.partner_winning_bid
+                and self.partner_winning_bid in winners
+                and self.player_winning_bid in winners
+            ):
                 status_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]} won!"
             elif self.player_winning_bid in winners:
                 status_string = f"{self.player_names[self.player_winning_bid]} won!"
             elif self.partner_winning_bid in winners:
                 status_string = f"{self.player_names[self.partner_winning_bid]} won!"
         else:
-            if self.partner_winning_bid in losers and self.player_winning_bid in losers:
+            if (
+                self.player_winning_bid != self.partner_winning_bid
+                and self.partner_winning_bid in losers
+                and self.player_winning_bid in losers
+            ):
                 status_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]} lost!"
             elif self.player_winning_bid in losers:
                 status_string = f"{self.player_names[self.player_winning_bid]} lost!"
             elif self.partner_winning_bid in losers:
                 status_string = f"{self.player_names[self.partner_winning_bid]} lost!"
 
-        emit("round complete", status_string, room=self.player_sids[i])
+        for i in range(5):
+            emit("round complete", status_string, room=self.player_sids[i])
