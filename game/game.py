@@ -18,7 +18,6 @@ class Game:
         self.kitty = None
         self.dealer = 0
         self.player_to_bid = 0
-        self.scores = None
         self.valid_bids = None
         self.bids = None
         self.player_winning_bid = None
@@ -38,7 +37,6 @@ class Game:
         self.player_sids.append(sid)
         self.player_names.append(name)
         if len(self.player_sids) == 5:
-            self.scores = {i: 0 for i in range(5)}
             self.start_round()
         else:
             self.update_waiting_players()
@@ -59,11 +57,11 @@ class Game:
         self.deal()
         self.valid_bids = [bid for bid in all_bids]
         self.bids = {}
-        scores = {self.player_names[i]: score for i, score in self.scores.items()}
         for i in range(5):
             # Send names from the perspective of the current player
             player_names = [self.player_names[(i + j) % 5] for j in range(5)]
-            emit("bid deal", (sort_card_list(self.hands[i], "n"), scores, player_names), room=self.player_sids[i])
+            player_points = [self.points[(i + j) % 5] for j in range(5)]
+            emit("bid deal", (sort_card_list(self.hands[i], "n"), player_points, player_names), room=self.player_sids[i])
 
         self.player_to_bid = self.dealer
         self.dealer = (self.dealer + 1) % 5

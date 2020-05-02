@@ -96,3 +96,10 @@ html {
 .hvr-grow:active {
     transform: scale(1.1);
 }
+
+#playerScores {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 200px;
+}

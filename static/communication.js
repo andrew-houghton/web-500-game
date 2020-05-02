@@ -57,7 +57,7 @@ function setupSocketHandlers(socket) {
         }
     });
 
-    socket.on('bid deal', (playerHand, scores, playerNames) => {
+    socket.on('bid deal', (playerHand, points, playerNames) => {
         showScreen("gameContainer")
         document.querySelectorAll('img.trickCardImage').forEach(e => e.remove());
         document.getElementById("kittyButtonControl").hidden = true;
@@ -69,6 +69,8 @@ function setupSocketHandlers(socket) {
 
         for (let i=0; i< playerNames.length; i++) {
             document.getElementById("player" + i + "Name").textContent = playerNames[i];
+            document.getElementById("player" + i + "ScoreName").textContent = playerNames[i];
+            document.getElementById("player" + i + "Score").textContent = points[i];
             document.getElementById("player" + i + "Tricks").textContent = "";
         }
     });
@@ -209,6 +211,9 @@ function setupSocketHandlers(socket) {
 
     socket.on('round result', (statusString, points) => {
         document.getElementById("statusString").textContent = statusString;
+        for (let i = 0; i < 5; i++) {
+            document.getElementById("player" + i + "Score").textContent = points[i];
+        }
     });
 
     socket.on('round complete', (statusString) => {
