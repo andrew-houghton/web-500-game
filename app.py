@@ -114,4 +114,5 @@ def round_ready():
     pass
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
+    print("Starting")
+    socketio.run(app, host="0.0.0.0")
