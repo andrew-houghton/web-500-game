@@ -186,7 +186,7 @@ class Game:
                 (
                     [self.trick_cards.get((i + j) % 5, "") for j in range(0, 5)],
                     self.player_names[winner_index],
-                    [(self.player_names[(i + j) % 5], self.tricks_won[(i + j) % 5]) for j in range(5)],
+                    [self.tricks_won[(i + j) % 5] for j in range(5)],
                 ),
                 room=self.player_sids[i],
             )

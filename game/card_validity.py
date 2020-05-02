@@ -36,7 +36,7 @@ def is_card_valid(trick_cards, bid_suit, cards, index):
         return True
 
     # If they are not following suit they must be unable to follow suit
-    has_lead_suit = any(_get_card_suit(suit_lead, card) == suit_lead for card in cards)
+    has_lead_suit = any(_get_card_suit(bid_suit, card) == suit_lead for card in cards)
     return not has_lead_suit
 
 

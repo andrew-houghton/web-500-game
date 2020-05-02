@@ -59,6 +59,8 @@ function setupSocketHandlers(socket) {
 
     socket.on('bid deal', (playerHand, scores, playerNames) => {
         showScreen("gameContainer")
+        document.querySelectorAll('img.trickCardImage').forEach(e => e.remove());
+        document.getElementById("kittyButtonControl").hidden = true;
         drawHand(playerHand, 0);
 
         for (let i = 1; i < 5; i++) {
@@ -66,8 +68,8 @@ function setupSocketHandlers(socket) {
         }
 
         for (let i=0; i< playerNames.length; i++) {
-            var bidTextElement = document.getElementById("player" + i + "Name");
-            bidTextElement.textContent = playerNames[i];
+            document.getElementById("player" + i + "Name").textContent = playerNames[i];
+            document.getElementById("player" + i + "Tricks").textContent = "";
         }
     });
 
@@ -151,6 +153,9 @@ function setupSocketHandlers(socket) {
         drawHand(playerHand, 0);
         currentHand = playerHand;
         document.getElementById("statusString").textContent = status_string;
+        for (let i = 0; i < 5; i++) {
+            document.getElementById("player" + i + "Tricks").textContent = " - 0";
+        }
     });
 
     socket.on('play request', (currentTrickCards, handSizes, cardValidity) => {
@@ -195,6 +200,10 @@ function setupSocketHandlers(socket) {
             if (currentTrickCards[i] !== ""){
                 drawPlayedCard(currentTrickCards[i], i);
             }
+        }
+
+        for (let i = 0; i < 5; i++) {
+            document.getElementById("player" + i + "Tricks").textContent = " - "+tricksWon[i];
         }
     });
 }

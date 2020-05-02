@@ -43,3 +43,10 @@ def test_winner_index_bower():
 def test_winner_index_joker():
     trick_cards = {0: 'diamond_2', 1: 'diamond_king', 2: 'joker', 3: 'diamond_3', 4: 'spade_4'}
     assert winning_card_index(trick_cards, 'c', 0) == 2
+
+def test_card_validity():
+    trick_cards = ['diamond_6', '', '', 'diamond_9', 'diamond_5']
+    hand_cards = ['spade_7', 'spade_ace', 'heart_3', 'heart_jack', 'club_9', 'club_king', 'spade_jack']
+
+    for i in range(len(hand_cards)):
+        assert is_card_valid(trick_cards, "c", hand_cards, i)
