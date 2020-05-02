@@ -110,7 +110,7 @@ function setupSocketHandlers(socket) {
         document.getElementById("statusString").textContent = "Waiting for "+biddingPlayerName+" to bid";
     });
 
-    socket.on('kitty request', (playerHand) => {
+    socket.on('kitty request', (playerHand, winningBid) => {
         document.getElementById("kittyButtonControl").hidden = false;
         images = drawHand(playerHand, 0);
 
@@ -142,13 +142,16 @@ function setupSocketHandlers(socket) {
         for (let i = 0; i < bidTextElements.length; i++) {
             bidTextElements[i].textContent = "";
         }
+        document.getElementById("currentBid").textContent = winningBid;
     });
+
     socket.on('kitty status', (biddingPlayerName, winningBid) => {
         document.getElementById("statusString").textContent = biddingPlayerName+ " won the bidding with "+winningBid;
         bidTextElements = document.querySelectorAll(".playerBidText :nth-child(2)");
         for (let i = 0; i < bidTextElements.length; i++) {
             bidTextElements[i].textContent = "";
         }
+        document.getElementById("currentBid").textContent = winningBid;
     });
 
     socket.on('round status', (statusString, playerHand) => {
@@ -214,6 +217,7 @@ function setupSocketHandlers(socket) {
         for (let i = 0; i < 5; i++) {
             document.getElementById("player" + i + "Score").textContent = points[i];
         }
+        document.getElementById("currentBid").textContent = "";
     });
 
     socket.on('round complete', (statusString) => {

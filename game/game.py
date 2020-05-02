@@ -61,7 +61,9 @@ class Game:
             # Send names from the perspective of the current player
             player_names = [self.player_names[(i + j) % 5] for j in range(5)]
             player_points = [self.points[(i + j) % 5] for j in range(5)]
-            emit("bid deal", (sort_card_list(self.hands[i], "n"), player_points, player_names), room=self.player_sids[i])
+            emit(
+                "bid deal", (sort_card_list(self.hands[i], "n"), player_points, player_names), room=self.player_sids[i]
+            )
 
         self.player_to_bid = self.dealer
         self.dealer = (self.dealer + 1) % 5
@@ -89,7 +91,10 @@ class Game:
             if i == self.player_winning_bid:
                 emit(
                     "kitty request",
-                    sort_card_list(self.kitty + self.hands[self.player_winning_bid], self.winning_bid[-1]),
+                    (
+                        sort_card_list(self.kitty + self.hands[self.player_winning_bid], self.winning_bid[-1]),
+                        all_bids[self.winning_bid]["name"],
+                    ),
                     room=self.player_sids[i],
                 )
             else:
