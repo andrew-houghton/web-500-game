@@ -151,8 +151,9 @@ class Game:
         for i in range(5):
             current_trick_cards = [self.trick_cards.get((i + j) % 5, "") for j in range(0, 5)]
             hand_sizes = [len(self.hands[(i + j) % 5]) for j in range(1, 5)]
+            trick_card_history = [[trick[(i + j) % 5] for j in range(5)] for trick in self.tricks_record]
             card_validity = [
-                is_card_valid(current_trick_cards, self.winning_bid[-1], self.hands[i], j)
+                is_card_valid(current_trick_cards, trick_card_history, self.winning_bid[-1], self.hands[i], j)
                 for j in range(len(self.hands[i]))
             ]
             if card_validity:

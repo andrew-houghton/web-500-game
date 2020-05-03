@@ -17,13 +17,13 @@ test_cards = [
 def test_nothing_played():
     for i in range(10):
         for suit in "scdhn":
-            assert is_card_valid(["", "", "", ""], suit, test_cards, i)
+            assert is_card_valid(["", "", "", ""], None, suit, test_cards, i)
 
 
 def test_follow_suit():
     valid_indices = {0, 1, 3, 5, 7}
     for i in range(len(test_cards)):
-        assert is_card_valid(["", "", "", "heart_7"], "h", test_cards, i) == (i in valid_indices)
+        assert is_card_valid(["", "", "", "heart_7"], None, "h", test_cards, i) == (i in valid_indices)
 
 
 def test_winner_index_trumps():
@@ -61,4 +61,4 @@ def test_card_validity():
     hand_cards = ["spade_7", "spade_ace", "heart_3", "heart_jack", "club_9", "club_king", "spade_jack"]
 
     for i in range(len(hand_cards)):
-        assert is_card_valid(trick_cards, "c", hand_cards, i)
+        assert is_card_valid(trick_cards, None, "c", hand_cards, i)

@@ -18,7 +18,7 @@ def _get_card_suit(bid_suit, card):
     return card.split("_")[0][0]
 
 
-def is_card_valid(trick_cards, bid_suit, cards, index):
+def is_card_valid(trick_cards, trick_card_history, bid_suit, cards, index):
     # If the player is leading they can play any card
     if set(trick_cards) == {''}:
         return True
