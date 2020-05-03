@@ -85,20 +85,12 @@ class Game:
                 emit("bid status", (previous_bids, self.player_names[self.player_to_bid]), room=self.player_sids[i])
 
     def send_kitty(self):
-        player_winning_bid_name = self.player_names[self.player_winning_bid]
-        if self.player_winning_bid == self.partner_winning_bid:
-            partner_name = self.player_names[self.partner_winning_bid]
-        else:
-            partner_name = ""
-
         self.winning_bid = self.bids[self.player_winning_bid]
         for i in range(5):
             if i == self.player_winning_bid:
                 emit(
                     "kitty request",
                     (
-                        player_winning_bid_name,
-                        partner_name,
                         sort_card_list(self.kitty + self.hands[self.player_winning_bid], self.winning_bid[-1]),
                         all_bids[self.winning_bid]["name"],
                     ),
@@ -108,8 +100,7 @@ class Game:
                 emit(
                     "kitty status",
                     (
-                        player_winning_bid_name,
-                        partner_name,
+                        self.player_names[self.player_winning_bid],
                         all_bids[self.winning_bid]["name"],
                     ),
                     room=self.player_sids[i],
@@ -141,15 +132,14 @@ class Game:
             set(self.hands[self.player_winning_bid] + self.kitty) - set(discarded_kitty)
         )
 
-        winning_bid_name = all_bids[self.winning_bid]["name"]
         if partner_index == 0:
-            status_string = f"{self.player_names[self.player_winning_bid]} bid {winning_bid_name}"
+            bidding_player_partner_string = f"{self.player_names[self.player_winning_bid]}"
         else:
-            status_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]} bid {winning_bid_name}"
+            bidding_player_partner_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]}"
 
         for i in range(5):
             self.hands[i] = sort_card_list(self.hands[i], self.winning_bid[-1])
-            emit("round status", (status_string, self.hands[i]), room=self.player_sids[i])
+            emit("round status", (bidding_player_partner_string, self.hands[i]), room=self.player_sids[i])
 
         self.tricks_record = []
         self.trick_cards = {}

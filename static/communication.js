@@ -110,7 +110,7 @@ function setupSocketHandlers(socket) {
         document.getElementById("statusString").textContent = "Waiting for " + biddingPlayerName + " to bid";
     });
 
-    socket.on('kitty request', (biddingPlayerName, biddingPartnerName, playerHand, winningBid) => {
+    socket.on('kitty request', (playerHand, winningBid) => {
         document.getElementById("kittyButtonControl").hidden = false;
         images = drawHand(playerHand, 0);
 
@@ -142,32 +142,22 @@ function setupSocketHandlers(socket) {
         for (let i = 0; i < bidTextElements.length; i++) {
             bidTextElements[i].textContent = "";
         }
-        if (biddingPartnerName == "") {
-            document.getElementById("currentBidders").textContent = biddingPlayerName;
-        } else {
-            document.getElementById("currentBidders").textContent = biddingPlayerName + " and " + biddingPartnerName;
-        }
         document.getElementById("currentBid").textContent = winningBid;
     });
 
-    socket.on('kitty status', (biddingPlayerName, biddingPartnerName, winningBid) => {
+    socket.on('kitty status', (biddingPlayerName, winningBid) => {
         document.getElementById("statusString").textContent = biddingPlayerName + " won " + winningBid + ". Waiting for " + biddingPlayerName + " to discard";
         bidTextElements = document.querySelectorAll(".playerBidText :nth-child(2)");
         for (let i = 0; i < bidTextElements.length; i++) {
             bidTextElements[i].textContent = "";
         }
-        if (biddingPartnerName == "") {
-            document.getElementById("currentBidders").textContent = biddingPlayerName;
-        } else {
-            document.getElementById("currentBidders").textContent = biddingPlayerName + " and " + biddingPartnerName;
-        }
         document.getElementById("currentBid").textContent = winningBid;
     });
 
-    socket.on('round status', (statusString, playerHand) => {
+    socket.on('round status', (biddingPlayers, playerHand) => {
         drawHand(playerHand, 0);
         currentHand = playerHand;
-        document.getElementById("statusString").textContent = statusString;
+        document.getElementById("currentBidders").textContent = biddingPlayers;
         for (let i = 0; i < 5; i++) {
             document.getElementById("player" + i + "Tricks").textContent = " - 0";
         }
