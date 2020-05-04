@@ -99,10 +99,7 @@ class Game:
             else:
                 emit(
                     "kitty status",
-                    (
-                        self.player_names[self.player_winning_bid],
-                        all_bids[self.winning_bid]["name"],
-                    ),
+                    (self.player_names[self.player_winning_bid], all_bids[self.winning_bid]["name"]),
                     room=self.player_sids[i],
                 )
 
@@ -135,7 +132,9 @@ class Game:
         if partner_index == 0:
             bidding_player_partner_string = f"{self.player_names[self.player_winning_bid]}"
         else:
-            bidding_player_partner_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]}"
+            bidding_player_partner_string = (
+                f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]}"
+            )
 
         for i in range(5):
             self.hands[i] = sort_card_list(self.hands[i], self.winning_bid[-1])
@@ -151,17 +150,27 @@ class Game:
         for i in range(5):
             current_trick_cards = [self.trick_cards.get((i + j) % 5, "") for j in range(0, 5)]
             hand_sizes = [len(self.hands[(i + j) % 5]) for j in range(1, 5)]
-            trick_card_history = [[trick[(i + j) % 5] for j in range(5)] for trick in self.tricks_record]
-            card_validity = [
-                is_card_valid(current_trick_cards, trick_card_history, self.winning_bid[-1], self.hands[i], j)
-                for j in range(len(self.hands[i]))
-            ]
+            trick_card_history = [(i, lead, trick) for lead, trick in self.tricks_record]
+
+            card_validity = []
+            joker_suit_info = None
+            for j in range(len(self.hands[i])):
+                validity, joker_suits = is_card_valid(
+                    current_trick_cards, trick_card_history, self.winning_bid[-1], self.hands[i], j
+                )
+                card_validity.append(validity)
+                joker_suit_info = joker_suits or joker_suit_info
+
             if card_validity:
                 assert any(card_validity), f"{current_trick_cards}, {self.winning_bid}, {self.hands[i]}"
 
             bidding_player_name = self.player_names[(self.lead_player + len(self.trick_cards)) % 5]
             if i == (self.lead_player + len(self.trick_cards)) % 5:
-                emit("play request", (current_trick_cards, hand_sizes, card_validity), room=self.player_sids[i])
+                emit(
+                    "play request",
+                    (current_trick_cards, hand_sizes, card_validity, joker_suit_info),
+                    room=self.player_sids[i],
+                )
             else:
                 emit("play status", (current_trick_cards, bidding_player_name, hand_sizes), room=self.player_sids[i])
 
@@ -180,7 +189,7 @@ class Game:
             [self.trick_cards[i] for i in range(5)], self.winning_bid[-1], self.lead_player
         )
         self.tricks_won[winner_index] += 1
-        self.tricks_record.append(self.trick_cards)
+        self.tricks_record.append((self.lead_player, self.trick_cards))
         self.lead_player = winner_index
 
         for i in range(5):

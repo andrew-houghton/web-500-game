@@ -163,7 +163,7 @@ function setupSocketHandlers(socket) {
         }
     });
 
-    socket.on('play request', (currentTrickCards, handSizes, cardValidity) => {
+    socket.on('play request', (currentTrickCards, handSizes, cardValidity, jokerSuitInfo) => {
         document.querySelectorAll('img.trickCardImage').forEach(e => e.remove());
         for (let i = 1; i < 5; i++) {
             drawHand(Array(handSizes[i - 1]).fill("back"), i);
