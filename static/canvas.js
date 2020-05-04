@@ -1,9 +1,9 @@
 const cardWidth = 112;
 const cardHeight = 163;
+const holderWidth = 620;
+const holderHeight = 230;
 const perCardDegrees = 6;
-const perCardRadians = perCardDegrees * Math.PI / 180;
 const cardSpread = 500;
-var cardContainer = document.getElementById("cardContainer");
 
 handLocations = [
     [0.5, 1, 0],
@@ -36,11 +36,12 @@ function drawPlayedCard(card, playerId){
         console.error("Could not find info for "+card);
     }
     blackHole[playerId].src = "data:image/png;base64," + cardData[card];
-    cardContainer.appendChild(blackHole[playerId]);
+    document.getElementById("player"+playerId+"Cards").appendChild(blackHole[playerId]);
 }
 
 
 function drawHand(cards, playerId) {
+    console.log(playerId)
     document.querySelectorAll('img.cardPlayer'+playerId).forEach(e => e.remove());
     var images = [];
     for (let i = 0; i < cards.length; i++) {
@@ -48,14 +49,10 @@ function drawHand(cards, playerId) {
         images[i].classList.add("cardPlayer" + playerId);
         images[i].addEventListener('load', function() {
             direction = handLocations[playerId][2]
-            x = handLocations[playerId][0] * window.innerWidth
-            y = handLocations[playerId][1] * window.innerHeight
-            card_degrees = -cards.length * perCardDegrees / 2 + 3 + perCardDegrees * i + direction;
-            var cardX = Math.floor(x + Math.sin(card_degrees * Math.PI / 180) * cardSpread);
-            var cardY = Math.floor(y - Math.cos(card_degrees * Math.PI / 180) * cardSpread);
-            cardX = cardX - cardSpread / 1.6 * Math.sin(direction * Math.PI / 180);
-            cardY = cardY + cardSpread / 1.6 * Math.cos(direction * Math.PI / 180);
-            draw(images[i], cardX, cardY, card_degrees);
+            cardDegrees = -cards.length * perCardDegrees / 2 + 3 + perCardDegrees * i;
+            var cardX = holderWidth/2 - cardWidth/2 + Math.floor(Math.sin(cardDegrees * Math.PI / 180) * cardSpread)
+            var cardY = 70 + Math.floor(Math.cos(cardDegrees * Math.PI / 180) * cardSpread) - cardSpread;
+            draw(images[i], cardX, cardY, cardDegrees);
         });
         images[i].src = "data:image/png;base64," + cardData[cards[i]];
         if (playerId == 0){
@@ -63,30 +60,16 @@ function drawHand(cards, playerId) {
         } else {
             images[i].setAttribute('data',playerId);
         }
-        cardContainer.appendChild(images[i]);
+        document.getElementById("player"+playerId+"Cards").appendChild(images[i]);
     }
     return images
 }
 
 function draw(img, x, y, rotation) {
     img.setAttribute("style", "transform: rotate(" + rotation + "deg)");
-    img.style.left = (x - cardWidth / 2) + 'px';
-    img.style.top = (y - cardHeight / 2) + 'px';
+    img.style.left = x + 'px';
+    img.style.bottom = y + 'px';
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-    for (let i = 0; i < handLocations.length; i++) {
-        // Set bid text locations
-        var statusElement = document.getElementById("player" + i + "Status");
-        x = handLocations[i][0] * window.innerWidth + cardSpread * 0.7 * Math.sin(handLocations[i][2] * Math.PI / 180);
-        y = handLocations[i][1] * window.innerHeight - cardSpread * 0.7 * Math.cos(handLocations[i][2] * Math.PI / 180);
-        if (handLocations[i][2] != 180 && handLocations[i][2] != 0) {
-            statusElement.setAttribute("style", "transform: rotate(" + handLocations[i][2] + "deg)");
-        }
-        statusElement.style.left = x + 'px';
-        statusElement.style.top = y + 'px';
-    }
-});
 
 document.getElementById("playerNameInput").addEventListener("keyup", function(event) {
     // Number 13 is the "Enter" key on the keyboard

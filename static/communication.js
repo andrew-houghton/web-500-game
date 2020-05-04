@@ -139,18 +139,16 @@ function setupSocketHandlers(socket) {
         }
 
         document.getElementById("statusString").textContent = "Select partner and discard kitty";
-        bidTextElements = document.querySelectorAll(".playerBidText :nth-child(2)");
-        for (let i = 0; i < bidTextElements.length; i++) {
-            bidTextElements[i].textContent = "";
+        for (let i = 0; i < 5; i++) {
+            document.getElementById("player"+i+"Bid").textContent = "";
         }
         document.getElementById("currentBid").textContent = winningBid;
     });
 
     socket.on('kitty status', (biddingPlayerName, winningBid) => {
         document.getElementById("statusString").textContent = biddingPlayerName + " won " + winningBid + ". Waiting for " + biddingPlayerName + " to discard";
-        bidTextElements = document.querySelectorAll(".playerBidText :nth-child(2)");
-        for (let i = 0; i < bidTextElements.length; i++) {
-            bidTextElements[i].textContent = "";
+        for (let i = 0; i < 5; i++) {
+            document.getElementById("player"+i+"Bid").textContent = "";
         }
         document.getElementById("currentBid").textContent = winningBid;
     });

@@ -29,39 +29,38 @@
         </div>
     </div>
     <div id="gameContainer" hidden>
-        <div id="cardContainer"></div>
         <div id="statusString"></div>
         <div class="centered" id="kittyButtonControl" hidden>
             <button id="kittyFinishedButton">Discard kitty and select partner</button>
         </div>
         <span>
             <div class="playerBidText" id="player0Status">
-                <p>
-                    <span id="player0Name"></span>
-                    <span id="player0Tricks"></span>
-                </p>
+                <span id="player0Name"></span>
+                <span id="player0Tricks"></span>
                 <p id="player0Bid"></p>
+                <div id="player0Cards"></div>
             </div>
             <div class="playerBidText" id="player1Status">
-                <p>
-                    <span id="player1Name"></span>
-                    <span id="player1Tricks"></span>
-                </p>
+                <span id="player1Name"></span>
+                <span id="player1Tricks"></span>
                 <p id="player1Bid"></p>
+                <div id="player1Cards"></div>
             </div>
             <div class="playerBidText" id="player2Status">
-                <p>
+                <div class="flipElement">
                     <span id="player2Name"></span>
                     <span id="player2Tricks"></span>
-                </p>
-                <p id="player2Bid"></p>
+                    <p id="player2Bid"></p>
+                </div>
+                <div id="player2Cards"></div>
             </div>
             <div class="playerBidText" id="player3Status">
-                <p>
+                <div class="flipElement">
                     <span id="player3Name"></span>
                     <span id="player3Tricks"></span>
-                </p>
-                <p id="player3Bid"></p>
+                    <p id="player3Bid"></p>
+                </div>
+                <div id="player3Cards"></div>
             </div>
             <div class="playerBidText" id="player4Status">
                 <p>
@@ -69,6 +68,7 @@
                     <span id="player4Tricks"></span>
                 </p>
                 <p id="player4Bid"></p>
+                <div id="player4Cards"></div>
             </div>
             <div id="playerScores">
                 <div id="currentBidders"></div>
