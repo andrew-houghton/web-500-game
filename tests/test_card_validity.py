@@ -17,7 +17,12 @@ test_cards = [
 def test_nothing_played():
     for i in range(10):
         for suit in "scdhn":
-            assert is_card_valid(["", "", "", ""], None, suit, test_cards, i) == (True, None)
+            validity, joker_suits = is_card_valid(["", "", "", ""], None, suit, test_cards, i)
+            assert validity == True
+            if test_cards[i] == "joker" and suit == "n":
+                assert joker_suits == {"h", "d", "c", "s"}
+            else:
+                assert joker_suits is None
 
 
 def test_follow_suit():
@@ -68,21 +73,21 @@ def test_joker_nt_nothing_played():
     trick_cards = ["", "", "", "", ""]
     hand_cards = ["joker", "spade_ace", "heart_3", "heart_jack", "club_9", "club_king", "spade_jack"]
     previous_tricks = []
-    assert is_card_valid(trick_cards, None, "c", hand_cards, 0) == (True, {"h", "d", "c", "s"})
+    assert is_card_valid(trick_cards, None, "n", hand_cards, 0) == (True, {"h", "d", "c", "s"})
 
 
 def test_joker_nt_hearts_unfinished():
     trick_cards = ["", "", "", "", ""]
     hand_cards = ["joker", "heart_3", "spade_ace", "club_9", "club_king", "spade_jack"]
     previous_tricks = [(0, 0, ["heart_jack", "heart_2", "heart_6", "heart_7", "heart_8"])]
-    assert is_card_valid(trick_cards, None, "c", hand_cards, 0) == (True, {"d", "c", "s"})
+    assert is_card_valid(trick_cards, None, "n", hand_cards, 0) == (True, {"d", "c", "s"})
 
 
 def test_joker_nt_hearts_finished():
     trick_cards = ["", "", "", "", ""]
     hand_cards = ["joker", "spade_ace", "spade_3", "club_9", "club_king", "spade_jack"]
     previous_tricks = [(0,0,["heart_jack", "heart_2", "heart_6", "heart_7", "heart_8"])]
-    assert is_card_valid(trick_cards, None, "c", hand_cards, 0) == (True, {"h", "d", "c", "s"})
+    assert is_card_valid(trick_cards, None, "n", hand_cards, 0) == (True, {"h", "d", "c", "s"})
 
 
 def test_joker_nt_void_suit():
@@ -90,4 +95,4 @@ def test_joker_nt_void_suit():
     trick_cards = ["", "", "", "", ""]
     hand_cards = ["joker", "spade_ace", "spade_3", "club_9", "club_king", "spade_jack"]
     previous_tricks = [(1, 0, ["heart_jack", "spade_2", "heart_6", "heart_7", "heart_8"])]
-    assert is_card_valid(trick_cards, None, "c", hand_cards, 0) == (True, {"d", "c"})
+    assert is_card_valid(trick_cards, None, "n", hand_cards, 0) == (True, {"d", "c"})

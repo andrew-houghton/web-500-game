@@ -18,12 +18,20 @@ def _get_card_suit(bid_suit, card):
     return card.split("_")[0][0]
 
 
+def _get_valid_joker_suits():
+    return {"h", "d", "c", "s"}
+
+
 def is_card_valid(trick_cards, trick_card_history, bid_suit, cards, index):  
     # Joker in no trumps played any time TODO fix this
     if cards[index] == "joker" and bid_suit == "n":
         # If leading then must be first or last of suit
         # If following then joker follows suit (must be first or last)
-        return (True, None)
+        valid_suits = _get_valid_joker_suits()
+        if valid_suits:
+            return (True, valid_suits)
+        else:
+            return (False, None)
 
     # If the player is leading they can play any card
     if set(trick_cards) == {''}:
@@ -64,7 +72,10 @@ def _get_card_number(bid_suit, card):
     return 11
 
 def winning_card_index(trick_cards, bid_suit, lead_index):
-    # TODO joker always wins
+    # Joker always wins
+    for i in range(len(trick_cards)):
+        if "joker" in trick_cards[i]:
+            return i
 
     if bid_suit != 'n':
         trumps_played = [card for card in trick_cards if _get_card_suit(bid_suit, card) == bid_suit]
