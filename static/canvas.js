@@ -32,6 +32,9 @@ function drawPlayedCard(card, playerId){
         let y = cardLocations[playerId][1] * window.innerHeight;
         draw(blackHole[playerId], x, y, cardLocations[playerId][2]);
     });
+    if (cardData[card] == undefined) {
+        console.error("Could not find info for "+card);
+    }
     blackHole[playerId].src = "data:image/png;base64," + cardData[card];
     cardContainer.appendChild(blackHole[playerId]);
 }

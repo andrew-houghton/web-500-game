@@ -13,8 +13,18 @@ def _get_card_suit(bid_suit, card):
         return "c"
     if card == "club_jack" and bid_suit == "s":
         return "s"
-    if card == "joker":
-        return bid_suit if bid_suit != "n" else "h"
+    if "joker" in card:
+        if bid_suit != "n":
+            return bid_suit
+        else:
+            if "heart" in card:
+                return "h"
+            elif "diamond" in card:
+                return "d"
+            elif "club" in card:
+                return "c"
+            else:
+                return "s"
     return card.split("_")[0][0]
 
 

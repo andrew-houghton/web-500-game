@@ -48,6 +48,7 @@ function setupSocketHandlers(socket) {
 
     socket.on('lobby waiting', (players) => {
         showScreen("waitingDetails")
+        document.getElementById("waitingGameHeading").textContent = players.length + " out of 5 players in game."
         waitingPlayersList = document.getElementById("waitingPlayersList")
         waitingPlayersList.innerHTML = '';
         for (let i = 0; i < players.length; i++) {
@@ -171,15 +172,42 @@ function setupSocketHandlers(socket) {
                 drawPlayedCard(currentTrickCards[i], i);
             }
         }
-        playerCards = document.querySelectorAll('img.cardPlayer0')
+        playerCards = document.querySelectorAll('img.cardPlayer0');
+        suitMappings = { "h": "heart", "d": "diamond", "c": "club", "s": "spade" };
         for (let i = 0; i < playerCards.length; i++) {
             if (cardValidity[i]) {
-                playerCards[i].onclick = function(event) {
-                    playedCard = playerCards[i].getAttribute("data");
-                    socket.emit('play', playedCard);
-                    currentHand.splice(currentHand.indexOf(playedCard), 1);
-                    drawHand(currentHand, 0);
-                };
+                if (playerCards[i].getAttribute("data") == "joker" && jokerSuitInfo) {
+                    playerCards[i].onclick = function(event) {
+                        playedCard = playerCards[i].getAttribute("data");
+                        currentHand.splice(currentHand.indexOf(playedCard), 1);
+                        drawHand(currentHand, 0);
+
+                        if (jokerSuitInfo.length == 1) {
+                            // Play the joker as a specific suit
+                            socket.emit('play', playedCard + "_" + suitMappings[jokerSuitInfo[0]]);
+                        } else {
+                            statusString = document.getElementById("statusString");
+                            statusString.innerHTML = "<p>Which suit are you playing the joker in?</p>";
+                            for (let j = 0; j < jokerSuitInfo.length; j++) {
+                                var button = document.createElement('button');
+                                button.innerHTML = suitMappings[jokerSuitInfo[j]];
+                                button.onclick = function(event) {
+                                    let joker_suit = playedCard + "_" + suitMappings[jokerSuitInfo[j]];
+                                    socket.emit('play', joker_suit);
+                                    document.getElementById("statusString").innerHTML = "";
+                                };
+                                statusString.appendChild(button);
+                            }
+                        }
+                    };
+                } else {
+                    playerCards[i].onclick = function(event) {
+                        playedCard = playerCards[i].getAttribute("data");
+                        socket.emit('play', playedCard);
+                        currentHand.splice(currentHand.indexOf(playedCard), 1);
+                        drawHand(currentHand, 0);
+                    };
+                }
                 playerCards[i].classList.add("playable")
             }
         }

@@ -159,7 +159,10 @@ class Game:
                     current_trick_cards, trick_card_history, self.winning_bid[-1], self.hands[i], j
                 )
                 card_validity.append(validity)
-                joker_suit_info = ''.join(joker_suits) or joker_suit_info
+                joker_suit_info = joker_suit_info or joker_suits
+
+            if joker_suit_info:
+                joker_suit_info = list(joker_suit_info)
 
             if card_validity:
                 assert any(card_validity), f"{current_trick_cards}, {self.winning_bid}, {self.hands[i]}"
@@ -178,7 +181,10 @@ class Game:
         # Save the played card
         player_index = self.player_sids.index(sid)
         self.trick_cards[player_index] = card
-        self.hands[player_index].remove(card)
+        if "joker" in card:
+            self.hands[player_index].remove("joker")
+        else:
+            self.hands[player_index].remove(card)
 
         # Is the round finished
         if len(self.trick_cards) < 5:
