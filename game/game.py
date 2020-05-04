@@ -159,7 +159,7 @@ class Game:
                     current_trick_cards, trick_card_history, self.winning_bid[-1], self.hands[i], j
                 )
                 card_validity.append(validity)
-                joker_suit_info = joker_suits or joker_suit_info
+                joker_suit_info = ''.join(joker_suits) or joker_suit_info
 
             if card_validity:
                 assert any(card_validity), f"{current_trick_cards}, {self.winning_bid}, {self.hands[i]}"

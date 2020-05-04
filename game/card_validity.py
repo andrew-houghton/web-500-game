@@ -48,17 +48,18 @@ def is_card_valid(trick_cards, trick_card_history, bid_suit, cards, index):
         valid_suits = _get_valid_joker_suits(trick_card_history, bid_suit, cards)
 
         if not valid_suits:
-            return (False, None)
+            return False, None
 
         if set(trick_cards) == {""}:
-            return (True, valid_suits)
+            return True, valid_suits
         else:
-            # TODO following suit
-            pass
-
+            suit_lead = _get_card_suit(bid_suit, _get_card_lead(trick_cards))
+            if len(cards) == 1 or suit_lead in valid_suits:
+                return True, {suit_lead}
+            return False, None
     # If the player is leading they can play any card
     if set(trick_cards) == {""}:
-        return (True, None)
+        return True, None
 
     # Otherwise they must follow suit
     suit_lead = _get_card_suit(bid_suit, _get_card_lead(trick_cards))
@@ -66,11 +67,11 @@ def is_card_valid(trick_cards, trick_card_history, bid_suit, cards, index):
 
     # If they are following suit then card is valid
     if card_suit == suit_lead:
-        return (True, None)
+        return True, None
 
     # If they are not following suit they must be unable to follow suit
     has_lead_suit = any(_get_card_suit(bid_suit, card) == suit_lead for card in cards)
-    return (not has_lead_suit, None)
+    return not has_lead_suit, None
 
 
 def _get_card_number(bid_suit, card):
