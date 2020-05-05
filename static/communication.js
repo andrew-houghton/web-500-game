@@ -100,7 +100,7 @@ function setupSocketHandlers(socket) {
             var bidTextElement = document.getElementById("player" + i + "Bid");
             bidTextElement.textContent = previousBids[i];
         }
-        document.getElementById("statusString").textContent = "Waiting you to bid";
+        document.getElementById("statusString").textContent = "Waiting for you to bid";
     });
 
     socket.on('bid status', (previousBids, biddingPlayerName) => {
@@ -209,7 +209,7 @@ function setupSocketHandlers(socket) {
                 playerCards[i].classList.add("playable")
             }
         }
-        document.getElementById("statusString").textContent = "Waiting you to play";
+        document.getElementById("statusString").textContent = "Waiting for you to play";
     });
 
     socket.on('play status', (currentTrickCards, currentPlayer, handSizes, leadIndex) => {

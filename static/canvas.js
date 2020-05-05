@@ -54,14 +54,3 @@ document.getElementById("playerNameInput").addEventListener("keyup", function(ev
     // Number 13 is the "Enter" key on the keyboard
     if (event.keyCode === 13) { lobbyConnect(); }
 });
-
-
-// document.addEventListener("DOMContentLoaded", function(event) {
-//     document.getElementById("statusString").textContent = "Waiting you to play";
-//     showScreen("gameContainer");
-//     drawPlayedCard("heart_ace", 0);
-//     drawPlayedCard("heart_2", 1);
-//     drawPlayedCard("heart_3", 2);
-//     drawPlayedCard("heart_4", 3);
-//     drawPlayedCard("heart_5", 4);
-// });
