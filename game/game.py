@@ -171,11 +171,11 @@ class Game:
             if i == (self.lead_player + len(self.trick_cards)) % 5:
                 emit(
                     "play request",
-                    (current_trick_cards, hand_sizes, card_validity, joker_suit_info),
+                    (current_trick_cards, hand_sizes, card_validity, joker_suit_info, self.lead_player + i % 5),
                     room=self.player_sids[i],
                 )
             else:
-                emit("play status", (current_trick_cards, bidding_player_name, hand_sizes), room=self.player_sids[i])
+                emit("play status", (current_trick_cards, bidding_player_name, hand_sizes, self.lead_player + i % 5), room=self.player_sids[i])
 
     def play_card(self, sid, card, socketio):
         # Save the played card
@@ -195,9 +195,6 @@ class Game:
             [self.trick_cards[i] for i in range(5)], self.winning_bid[-1], self.lead_player
         )
         self.tricks_won[winner_index] += 1
-        self.tricks_record.append((self.lead_player, self.trick_cards))
-        self.lead_player = winner_index
-
         for i in range(5):
             emit(
                 "play trick",
@@ -205,9 +202,13 @@ class Game:
                     [self.trick_cards.get((i + j) % 5, "") for j in range(0, 5)],
                     self.player_names[winner_index],
                     [self.tricks_won[(i + j) % 5] for j in range(5)],
+                    self.lead_player + i % 5,
                 ),
                 room=self.player_sids[i],
             )
+
+        self.tricks_record.append((self.lead_player, self.trick_cards))
+        self.lead_player = winner_index
         self.trick_cards = {}
 
         socketio.sleep(0)

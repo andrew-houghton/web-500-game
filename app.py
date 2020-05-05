@@ -53,7 +53,7 @@ def player_leaving_game(sid):
     if sid in player_games:
         game = player_games[sid]
         game.remove_player(sid)
-        if len(game.player_sids) == 0:
+        if len(game.player_sids) == 0 and game in games:
             games.remove(game)
         del player_games[sid]
         update_game_room()

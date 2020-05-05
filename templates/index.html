@@ -29,10 +29,6 @@
         </div>
     </div>
     <div id="gameContainer" hidden>
-        <div id="statusString"></div>
-        <div class="centered" id="kittyButtonControl" hidden>
-            <button id="kittyFinishedButton">Discard kitty and select partner</button>
-        </div>
         <span>
             <div class="playerBidText" id="player0Status">
                 <span id="player0Name"></span>
@@ -80,45 +76,52 @@
                 <div><span id="player4ScoreName"></span>: <span id="player4Score"></span></div>
             </div>
         </span>
-        <div class="centered" id="bid_section">
-            <button id="bid_button_pass">Pass</button>
-            <table>
-                <tr>
-                    <td><button id="bid_button_6s">6 S</button></td>
-                    <td><button id="bid_button_6c">6 C</button></td>
-                    <td><button id="bid_button_6d">6 D</button></td>
-                    <td><button id="bid_button_6h">6 H</button></td>
-                    <td><button id="bid_button_6n">6 NT</button></td>
-                </tr>
-                <tr>
-                    <td><button id="bid_button_7s">7 S</button></td>
-                    <td><button id="bid_button_7c">7 C</button></td>
-                    <td><button id="bid_button_7d">7 D</button></td>
-                    <td><button id="bid_button_7h">7 H</button></td>
-                    <td><button id="bid_button_7n">7 NT</button></td>
-                </tr>
-                <tr>
-                    <td><button id="bid_button_8s">8 S</button></td>
-                    <td><button id="bid_button_8c">8 C</button></td>
-                    <td><button id="bid_button_8d">8 D</button></td>
-                    <td><button id="bid_button_8h">8 H</button></td>
-                    <td><button id="bid_button_8n">8 NT</button></td>
-                </tr>
-                <tr>
-                    <td><button id="bid_button_9s">9 S</button></td>
-                    <td><button id="bid_button_9c">9 C</button></td>
-                    <td><button id="bid_button_9d">9 D</button></td>
-                    <td><button id="bid_button_9h">9 H</button></td>
-                    <td><button id="bid_button_9n">9 NT</button></td>
-                </tr>
-                <tr>
-                    <td><button id="bid_button_10s">10 S</button></td>
-                    <td><button id="bid_button_10c">10 C</button></td>
-                    <td><button id="bid_button_10d">10 D</button></td>
-                    <td><button id="bid_button_10h">10 H</button></td>
-                    <td><button id="bid_button_10n">10 NT</button></td>
-                </tr>
-            </table>
+        <div class="centered">
+            <div id="statusString"></div>
+            <div id="kittyButtonControl" hidden>
+                <button id="kittyFinishedButton">Discard kitty and select partner</button>
+            </div>
+            <div id="bid_section">
+                <button id="bid_button_pass">Pass</button>
+                <table>
+                    <tr>
+                        <td><button id="bid_button_6s">6 S</button></td>
+                        <td><button id="bid_button_6c">6 C</button></td>
+                        <td><button id="bid_button_6d">6 D</button></td>
+                        <td><button id="bid_button_6h">6 H</button></td>
+                        <td><button id="bid_button_6n">6 NT</button></td>
+                    </tr>
+                    <tr>
+                        <td><button id="bid_button_7s">7 S</button></td>
+                        <td><button id="bid_button_7c">7 C</button></td>
+                        <td><button id="bid_button_7d">7 D</button></td>
+                        <td><button id="bid_button_7h">7 H</button></td>
+                        <td><button id="bid_button_7n">7 NT</button></td>
+                    </tr>
+                    <tr>
+                        <td><button id="bid_button_8s">8 S</button></td>
+                        <td><button id="bid_button_8c">8 C</button></td>
+                        <td><button id="bid_button_8d">8 D</button></td>
+                        <td><button id="bid_button_8h">8 H</button></td>
+                        <td><button id="bid_button_8n">8 NT</button></td>
+                    </tr>
+                    <tr>
+                        <td><button id="bid_button_9s">9 S</button></td>
+                        <td><button id="bid_button_9c">9 C</button></td>
+                        <td><button id="bid_button_9d">9 D</button></td>
+                        <td><button id="bid_button_9h">9 H</button></td>
+                        <td><button id="bid_button_9n">9 NT</button></td>
+                    </tr>
+                    <tr>
+                        <td><button id="bid_button_10s">10 S</button></td>
+                        <td><button id="bid_button_10c">10 C</button></td>
+                        <td><button id="bid_button_10d">10 D</button></td>
+                        <td><button id="bid_button_10h">10 H</button></td>
+                        <td><button id="bid_button_10n">10 NT</button></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="playedCardContainer"></div>
         </div>
         <script src="static/cardData.js"></script>
         <script src="static/canvas.js"></script>

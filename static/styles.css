@@ -4,20 +4,10 @@
     left: 50%;
     margin-top: -100px;
     margin-left: -100px;
-    width: 200px;
-    height: 200px;
+    width: 260px;
+    height: 260px;
+    text-align: center;
 }
-
-#statusString {
-    position: absolute;
-    top: 35%;
-    left: 50%;
-    margin-top: -20px;
-    margin-left: -100px;
-    height: 40px;
-    width: 200px;
-}
-
 
 div.playerBidText p {
     margin: 0px;
@@ -95,6 +85,7 @@ html {
   --player-cw-half: -310px;
   --player-ch: 300px;
   --player-ch-half: -150px;
+  --card-width: -56px;
 }
 
 .playerBidText {
@@ -105,6 +96,7 @@ html {
     text-align: center;
 }
 img {
+    -webkit-transform-origin: 50%  51%;
     float: right;
     position: absolute;
 }
@@ -141,4 +133,34 @@ img {
     margin-top: var(--player-ch-half);
     top: 50%;
     transform: rotate(270deg);
+}
+
+#playedCard0 {
+    bottom: 0%;
+    left: 50%;
+    margin-left: var(--card-width);
+}
+#playedCard1 {
+    top: 50%;
+    left: 0%;
+    transform: rotate(90deg);
+    margin-top: var(--card-width);
+}
+#playedCard2 {
+    top: 10%;
+    left: 25%;
+    transform: rotate(150deg);
+    margin-left: var(--card-width);
+}
+#playedCard3 {
+    top: 10%;
+    left: 75%;
+    transform: rotate(210deg);
+    margin-left: var(--card-width);
+}
+#playedCard4 {
+    top: 50%;
+    right: 0%;
+    transform: rotate(270deg);
+    margin-top: var(--card-width);
 }

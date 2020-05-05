@@ -140,7 +140,7 @@ function setupSocketHandlers(socket) {
 
         document.getElementById("statusString").textContent = "Select partner and discard kitty";
         for (let i = 0; i < 5; i++) {
-            document.getElementById("player"+i+"Bid").textContent = "";
+            document.getElementById("player" + i + "Bid").textContent = "";
         }
         document.getElementById("currentBid").textContent = winningBid;
     });
@@ -148,7 +148,7 @@ function setupSocketHandlers(socket) {
     socket.on('kitty status', (biddingPlayerName, winningBid) => {
         document.getElementById("statusString").textContent = biddingPlayerName + " won " + winningBid + ". Waiting for " + biddingPlayerName + " to discard";
         for (let i = 0; i < 5; i++) {
-            document.getElementById("player"+i+"Bid").textContent = "";
+            document.getElementById("player" + i + "Bid").textContent = "";
         }
         document.getElementById("currentBid").textContent = winningBid;
     });
@@ -162,12 +162,12 @@ function setupSocketHandlers(socket) {
         }
     });
 
-    socket.on('play request', (currentTrickCards, handSizes, cardValidity, jokerSuitInfo) => {
+    socket.on('play request', (currentTrickCards, handSizes, cardValidity, jokerSuitInfo, leadIndex) => {
         document.querySelectorAll('img.trickCardImage').forEach(e => e.remove());
         for (let i = 1; i < 5; i++) {
             drawHand(Array(handSizes[i - 1]).fill("back"), i);
             if (currentTrickCards[i] !== "") {
-                drawPlayedCard(currentTrickCards[i], i);
+                drawPlayedCard(currentTrickCards[i], i, leadIndex);
             }
         }
         playerCards = document.querySelectorAll('img.cardPlayer0');
@@ -212,24 +212,24 @@ function setupSocketHandlers(socket) {
         document.getElementById("statusString").textContent = "Waiting you to play";
     });
 
-    socket.on('play status', (currentTrickCards, currentPlayer, handSizes) => {
+    socket.on('play status', (currentTrickCards, currentPlayer, handSizes, leadIndex) => {
         document.querySelectorAll('img.trickCardImage').forEach(e => e.remove());
         for (let i = 0; i < 5; i++) {
             if (i !== 0) {
                 drawHand(Array(handSizes[i - 1]).fill("back"), i);
             }
             if (currentTrickCards[i] !== "") {
-                drawPlayedCard(currentTrickCards[i], i);
+                drawPlayedCard(currentTrickCards[i], i, leadIndex);
             }
         }
         document.getElementById("statusString").textContent = 'Waiting for ' + currentPlayer + ' to play';
     });
 
-    socket.on('play trick', (currentTrickCards, winningPlayer, tricksWon) => {
+    socket.on('play trick', (currentTrickCards, winningPlayer, tricksWon, leadIndex) => {
         document.getElementById("statusString").textContent = winningPlayer + ' won the trick';
         for (let i = 0; i < 5; i++) {
             if (currentTrickCards[i] !== "") {
-                drawPlayedCard(currentTrickCards[i], i);
+                drawPlayedCard(currentTrickCards[i], i, leadIndex);
             }
         }
 
