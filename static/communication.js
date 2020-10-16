@@ -7,6 +7,7 @@ function showScreen(screenName) {
     document.getElementById("gamesDetails").hidden = "gamesDetails" !== screenName;
     document.getElementById("waitingDetails").hidden = "waitingDetails" !== screenName;
     document.getElementById("gameContainer").hidden = "gameContainer" !== screenName;
+    document.getElementById("lobbyHeading").hidden = "gameContainer" == screenName;
     hideBidSection(true)
 }
 
@@ -82,7 +83,7 @@ function setupSocketHandlers(socket) {
             hideBidSection(true);
             socket.emit("bid", "p");
         };
-        allBids = ['6s', '6c', '6d', '6h', '6n', '7s', '7c', '7d', '7h', '7n', '8s', '8c', '8d', '8h', '8n', '9s', '9c', '9d', '9h', '9n', '10s', '10c', '10d', '10h', '10n']
+        allBids = ['5s', '5c', '5d', '5h', '5n', '6s', '6c', '6d', '6h', '6n', '7s', '7c', '7d', '7h', '7n', '8s', '8c', '8d', '8h', '8n', '9s', '9c', '9d', '9h', '9n', '10s', '10c', '10d', '10h', '10n']
         for (let i = 0; i < allBids.length; i++) {
             button = document.getElementById("bid_button_" + allBids[i])
             if (validBids.includes(allBids[i])) {
@@ -255,10 +256,29 @@ function setupSocketHandlers(socket) {
 function lobbyConnect() {
     if (connectionEnabled) {
         name = document.getElementById("playerNameInput").value
-        if (name.trim().length >= 1) {
-            connectionEnabled = false;
-            socket = io({ query: { playerName: name.trim() } });
-            setupSocketHandlers(socket)
+        if (name.trim().length == 0) {
+            names_pool = [
+                "Winnie the Pooh",
+                "Gandalf",
+                "Sir Lancelot",
+                "Patrick Bateman",
+                "Shrek",
+                "Eddard Stark",
+                "Mr Krabs",
+                "Patrick Star",
+                "Wide Putin",
+                "Admiral Ackbar",
+                "Frodo Baggins",
+                "Harambe",
+                "Ricardo Milos",
+                "Robbie Rotten",
+                "Karen",
+                "Flat Earth Fred",
+            ]
+            name = names_pool[Math.floor(Math.random() * names_pool.length)];
         }
+        connectionEnabled = false;
+        socket = io({ query: { playerName: name.trim() } });
+        setupSocketHandlers(socket)
     }
 }

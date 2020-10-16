@@ -10,7 +10,7 @@
 
 <body>
     <div id="lobbyContainer">
-        <h1>Lobby</h1>
+        <h1 id="lobbyHeading">Lobby</h1>
         <div id="connectionDetails">
             <p>What is your name?</p>
             <input type="text" name="player0Name" id="playerNameInput" autofocus maxlength="20">
@@ -30,33 +30,14 @@
     </div>
     <div id="gameContainer" hidden>
         <span>
-            <div class="playerBidText" id="player0Status">
-                <span id="player0Name"></span>
-                <span id="player0Tricks"></span>
-                <p id="player0Bid"></p>
-                <div id="player0Cards"></div>
-            </div>
-            <div class="playerBidText" id="player1Status">
-                <span id="player1Name"></span>
-                <span id="player1Tricks"></span>
-                <p id="player1Bid"></p>
-                <div id="player1Cards"></div>
-            </div>
-            <div class="playerBidText" id="player2Status">
-                <div class="flipElement">
-                    <span id="player2Name"></span>
-                    <span id="player2Tricks"></span>
-                    <p id="player2Bid"></p>
-                </div>
-                <div id="player2Cards"></div>
-            </div>
-            <div class="playerBidText" id="player3Status">
-                <div class="flipElement">
-                    <span id="player3Name"></span>
-                    <span id="player3Tricks"></span>
-                    <p id="player3Bid"></p>
-                </div>
-                <div id="player3Cards"></div>
+            <div id="playerScores">
+                <div id="currentBidders"></div>
+                <div id="currentBid"></div>
+                <div><span id="player0ScoreName"></span>: <span id="player0Score"></span></div>
+                <div><span id="player1ScoreName"></span>: <span id="player1Score"></span></div>
+                <div><span id="player2ScoreName"></span>: <span id="player2Score"></span></div>
+                <div><span id="player3ScoreName"></span>: <span id="player3Score"></span></div>
+                <div><span id="player4ScoreName"></span>: <span id="player4Score"></span></div>
             </div>
             <div class="playerBidText" id="player4Status">
                 <p>
@@ -66,14 +47,33 @@
                 <p id="player4Bid"></p>
                 <div id="player4Cards"></div>
             </div>
-            <div id="playerScores">
-                <div id="currentBidders"></div>
-                <div id="currentBid"></div>
-                <div><span id="player0ScoreName"></span>: <span id="player0Score"></span></div>
-                <div><span id="player1ScoreName"></span>: <span id="player1Score"></span></div>
-                <div><span id="player2ScoreName"></span>: <span id="player2Score"></span></div>
-                <div><span id="player3ScoreName"></span>: <span id="player3Score"></span></div>
-                <div><span id="player4ScoreName"></span>: <span id="player4Score"></span></div>
+            <div class="playerBidText" id="player3Status">
+                <div class="flipElement">
+                    <span id="player3Name"></span>
+                    <span id="player3Tricks"></span>
+                    <p id="player3Bid"></p>
+                </div>
+                <div id="player3Cards"></div>
+            </div>
+            <div class="playerBidText" id="player2Status">
+                <div class="flipElement">
+                    <span id="player2Name"></span>
+                    <span id="player2Tricks"></span>
+                    <p id="player2Bid"></p>
+                </div>
+                <div id="player2Cards"></div>
+            </div>
+            <div class="playerBidText" id="player1Status">
+                <span id="player1Name"></span>
+                <span id="player1Tricks"></span>
+                <p id="player1Bid"></p>
+                <div id="player1Cards"></div>
+            </div>
+            <div class="playerBidText" id="player0Status">
+                <span id="player0Name"></span>
+                <span id="player0Tricks"></span>
+                <p id="player0Bid"></p>
+                <div id="player0Cards"></div>
             </div>
         </span>
         <div class="centered">
@@ -84,6 +84,13 @@
             <div id="bid_section">
                 <button id="bid_button_pass">Pass</button>
                 <table>
+                    <tr>
+                        <td><button id="bid_button_5s">5 S</button></td>
+                        <td><button id="bid_button_5c">5 C</button></td>
+                        <td><button id="bid_button_5d">5 D</button></td>
+                        <td><button id="bid_button_5h">5 H</button></td>
+                        <td><button id="bid_button_5n">5 NT</button></td>
+                    </tr>
                     <tr>
                         <td><button id="bid_button_6s">6 S</button></td>
                         <td><button id="bid_button_6c">6 C</button></td>
