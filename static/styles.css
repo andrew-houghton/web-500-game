@@ -164,3 +164,7 @@ img {
     transform: rotate(270deg);
     margin-top: var(--card-width);
 }
+
+li > input {
+    width: 60px;
+}

@@ -69,7 +69,7 @@ def test_disconnect():
 
 
 @socketio.on("lobby create")
-def start_game(): 
+def create_game():
     game_room.remove(request.sid)
     game = Game()
     games.append(game)
@@ -96,6 +96,16 @@ def exit_waiting():
 @socketio.on("bid")
 def bid(bid):
     player_games[request.sid].bid(request.sid, bid)
+
+@socketio.on("lobby begin")
+def start_game(scores):
+    game = player_games[request.sid]
+    if request.sid == game.owner:
+        for player, point_score in scores.items():
+            if type(point_score) != int or not (-500 < point_score < 500) or player not in '01234':
+                return
+        player_games[request.sid].points = {int(k):v for k,v in scores.items()}
+        player_games[request.sid].start_round()
 
 @socketio.on("kitty")
 def kitty(discarded_kitty, player_index):

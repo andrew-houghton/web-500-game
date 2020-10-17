@@ -29,17 +29,14 @@ class Game:
 
     def update_waiting_players(self):
         for player in self.player_sids:
-            emit("lobby waiting", self.player_names, room=player)
+            emit("lobby waiting", (self.player_names, player==self.owner), room=player)
 
     def add_player(self, sid, name):
         if len(self.player_sids) == 0:
             self.owner = sid
         self.player_sids.append(sid)
         self.player_names.append(name)
-        if len(self.player_sids) == 5:
-            self.start_round()
-        else:
-            self.update_waiting_players()
+        self.update_waiting_players()
 
     def remove_player(self, sid):
         if len(self.player_sids) > 1 and self.owner == sid:
@@ -147,6 +144,7 @@ class Game:
         self.send_play_request()
 
     def send_play_request(self):
+        print(self.points)
         for i in range(5):
             current_trick_cards = [self.trick_cards.get((i + j) % 5, "") for j in range(0, 5)]
             hand_sizes = [len(self.hands[(i + j) % 5]) for j in range(1, 5)]

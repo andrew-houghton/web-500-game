@@ -1,5 +1,4 @@
 var connectionEnabled = true;
-
 var currentHand = null;
 
 function showScreen(screenName) {
@@ -27,12 +26,23 @@ function setupSocketHandlers(socket) {
                 socket.emit('lobby join', games[i].id);
             };
             gamesList.appendChild(listItem);
-
         }
     });
+    document.getElementById("createGameButton").onclick = function(event) {
+        socket.emit('lobby create');
 
-    document.getElementById("createGameButton").onclick = function(event) { socket.emit('lobby create'); };
-    document.getElementById("leaveGameButton").onclick = function(event) { socket.emit('lobby exit'); };
+    };
+    document.getElementById("leaveGameButton").onclick = function(event) {
+        socket.emit('lobby exit');
+    };
+    document.getElementById("startGameButton").onclick = function(event) {
+        scores = {}
+        waitingPlayersListChildren = document.getElementById("waitingPlayersList").children
+        for (var i = 0; i < waitingPlayersListChildren.length; i++) {
+            scores[i] = parseInt(waitingPlayersListChildren[i].children[0].value)
+        }
+        socket.emit('lobby begin', scores);
+    };
     document.getElementById("kittyFinishedButton").onclick = function(event) {
         selected_cards = document.querySelectorAll('img.cardPlayer0.selected');
         if (selected_cards.length != 3) { return; }
@@ -47,15 +57,28 @@ function setupSocketHandlers(socket) {
         socket.emit('kitty', discarded_kitty, partner_index);
     };
 
-    socket.on('lobby waiting', (players) => {
+    socket.on('lobby waiting', (players, isOwner) => {
         showScreen("waitingDetails")
         document.getElementById("waitingGameHeading").textContent = players.length + " out of 5 players in game."
         waitingPlayersList = document.getElementById("waitingPlayersList")
         waitingPlayersList.innerHTML = '';
+        if (isOwner && players.length == 5){
+            document.getElementById("startGameButton").hidden = false;
+        }
         for (let i = 0; i < players.length; i++) {
-            listItem = document.createElement('li');
-            listItem.textContent = players[i];
-            waitingPlayersList.appendChild(listItem);
+            scoreInput = document.createElement('li');
+            if (isOwner && players.length == 5){
+                inputBox = document.createElement('input');
+                inputBox.setAttribute("type", "number");
+                inputBox.value = 0;
+                scoreInput.appendChild(inputBox);
+            }
+
+            nameText = document.createElement('div');
+            nameText.textContent = players[i];
+            scoreInput.appendChild(nameText);
+
+            waitingPlayersList.appendChild(scoreInput);
         }
     });
 
