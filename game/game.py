@@ -223,7 +223,7 @@ class Game:
 
     @staticmethod
     def get_bid_number(bid):
-        for i in range(6, 11):
+        for i in range(5, 11):
             if str(i) in bid:
                 return i
 
