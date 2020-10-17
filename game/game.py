@@ -212,7 +212,7 @@ class Game:
         self.trick_cards = {}
 
         socketio.sleep(0)
-        thread = threading.Thread(target=socketio.sleep, args=(2,))
+        thread = threading.Thread(target=socketio.sleep, args=(5,))
         thread.start()
         thread.join()
 
@@ -268,7 +268,7 @@ class Game:
             emit("round result", (status_string, player_points), room=self.player_sids[i])
 
         socketio.sleep()
-        thread = threading.Thread(target=socketio.sleep, args=(3,))
+        thread = threading.Thread(target=socketio.sleep, args=(5,))
         thread.start()
         thread.join()
 
@@ -277,24 +277,15 @@ class Game:
         if self.player_winning_bid in winning_players or self.partner_winning_bid in winning_players:
             self.end_game(winners=winning_players)
         elif losing_players:
-            self.end_game(losers=losing_players)
+            # Winners are players on most points (ties allowed)
+            winning_players = [i for i in range(5) if self.points[i] == max(self.points.values())]
+            self.end_game(losers=losing_players, winners=winning_players)
         else:
             self.start_round()
 
     def end_game(self, winners=None, losers=None):
         print("Game ended")
-        if winners:
-            if (
-                self.player_winning_bid != self.partner_winning_bid
-                and self.partner_winning_bid in winners
-                and self.player_winning_bid in winners
-            ):
-                status_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]} won!"
-            elif self.player_winning_bid in winners:
-                status_string = f"{self.player_names[self.player_winning_bid]} won!"
-            elif self.partner_winning_bid in winners:
-                status_string = f"{self.player_names[self.partner_winning_bid]} won!"
-        else:
+        if losers:
             if (
                 self.player_winning_bid != self.partner_winning_bid
                 and self.partner_winning_bid in losers
@@ -305,6 +296,22 @@ class Game:
                 status_string = f"{self.player_names[self.player_winning_bid]} lost!"
             elif self.partner_winning_bid in losers:
                 status_string = f"{self.player_names[self.partner_winning_bid]} lost!"
+            if len(winners) == 1:
+                status_string += f" {self.player_names[winners[0]]} won!"
+            else:
+                status_string += f" {', '.join(self.player_names[winner] for winner in winners[1:])} and {self.player_names[winners[0]]} won!"
+
+        else:
+            if (
+                self.player_winning_bid != self.partner_winning_bid
+                and self.partner_winning_bid in winners
+                and self.player_winning_bid in winners
+            ):
+                status_string = f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]} won!"
+            elif self.player_winning_bid in winners:
+                status_string = f"{self.player_names[self.player_winning_bid]} won!"
+            elif self.partner_winning_bid in winners:
+                status_string = f"{self.player_names[self.partner_winning_bid]} won!"
 
         for i in range(5):
             emit("round complete", status_string, room=self.player_sids[i])
