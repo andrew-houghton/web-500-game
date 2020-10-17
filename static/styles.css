@@ -168,3 +168,7 @@ img {
 li > input {
     width: 60px;
 }
+
+#kittyCardSelection {
+    text-align: left;
+}

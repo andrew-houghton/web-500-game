@@ -80,7 +80,53 @@
         <div class="centered">
             <div id="statusString"></div>
             <div id="kittyButtonControl" hidden>
-                <button id="kittyFinishedButton">Discard kitty and select partner</button>
+                <div id="kittyCardSelection">
+                    <b>Partner Card Selection</b>
+                    <br>
+                    Suit:
+                    <br>
+                    <input type="radio" id="input_suit" name="suit" value="hearts">
+                    <label for="hearts">Hearts</label>
+                    <input type="radio" id="input_suit" name="suit" value="diamonds">
+                    <label for="diamonds">Diamonds</label>
+                    <br>
+                    <input type="radio" id="input_suit" name="suit" value="clubs">
+                    <label for="clubs">Clubs</label>
+                    <input type="radio" id="input_suit" name="suit" value="spades">
+                    <label for="spades">Spades</label>
+                    <br>
+                    Number:
+                    <br>
+                    <input type="radio" id="input_number" name="number" value="2">
+                    <label for="2">2</label>
+                    <input type="radio" id="input_number" name="number" value="3">
+                    <label for="3">3</label>
+                    <input type="radio" id="input_number" name="number" value="4">
+                    <label for="4">4</label>
+                    <input type="radio" id="input_number" name="number" value="5">
+                    <label for="5">5</label>
+                    <br>
+                    <input type="radio" id="input_number" name="number" value="6">
+                    <label for="6">6</label>
+                    <input type="radio" id="input_number" name="number" value="7">
+                    <label for="7">7</label>
+                    <input type="radio" id="input_number" name="number" value="8">
+                    <label for="8">8</label>
+                    <input type="radio" id="input_number" name="number" value="9">
+                    <label for="9">9</label>
+                    <input type="radio" id="input_number" name="number" value="10">
+                    <label for="10">10</label>
+                    <br>
+                    <input type="radio" id="input_number" name="number" value="J">
+                    <label for="J">J</label>
+                    <input type="radio" id="input_number" name="number" value="Q">
+                    <label for="Q">Q</label>
+                    <input type="radio" id="input_number" name="number" value="K">
+                    <label for="K">K</label>
+                    <input type="radio" id="input_number" name="number" value="A">
+                    <label for="A">A</label>
+                </div>
+                <button id="kittyFinishedButton">Done</button>
             </div>
             <div id="bid_section">
                 <button id="bid_button_pass">Pass</button>
