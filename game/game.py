@@ -171,11 +171,11 @@ class Game:
             if i == (self.lead_player + len(self.trick_cards)) % 5:
                 emit(
                     "play request",
-                    (current_trick_cards, hand_sizes, card_validity, joker_suit_info, self.lead_player + i % 5),
+                    (current_trick_cards, hand_sizes, card_validity, joker_suit_info, (i - self.lead_player) % 5),
                     room=self.player_sids[i],
                 )
             else:
-                emit("play status", (current_trick_cards, bidding_player_name, hand_sizes, self.lead_player + i % 5), room=self.player_sids[i])
+                emit("play status", (current_trick_cards, bidding_player_name, hand_sizes, (i - self.lead_player) % 5), room=self.player_sids[i])
 
     def play_card(self, sid, card, socketio):
         # Save the played card
@@ -202,7 +202,7 @@ class Game:
                     [self.trick_cards.get((i + j) % 5, "") for j in range(0, 5)],
                     self.player_names[winner_index],
                     [self.tricks_won[(i + j) % 5] for j in range(5)],
-                    self.lead_player + i % 5,
+                    (i - self.lead_player) % 5,
                 ),
                 room=self.player_sids[i],
             )
@@ -284,7 +284,6 @@ class Game:
             self.start_round()
 
     def end_game(self, winners=None, losers=None):
-        print("Game ended")
         if losers:
             if (
                 self.player_winning_bid != self.partner_winning_bid
