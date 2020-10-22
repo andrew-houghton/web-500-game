@@ -98,18 +98,19 @@ def bid(bid):
     player_games[request.sid].bid(request.sid, bid)
 
 @socketio.on("lobby begin")
-def start_game(scores):
+def start_game(scores, partner_mode):
     game = player_games[request.sid]
     if request.sid == game.owner:
         for player, point_score in scores.items():
             if type(point_score) != int or not (-500 < point_score < 500) or player not in '01234':
                 return
         player_games[request.sid].points = {int(k):v for k,v in scores.items()}
+        player_games[request.sid].partner_mode = partner_mode
         player_games[request.sid].start_round()
 
 @socketio.on("kitty")
-def kitty(discarded_kitty, player_index):
-    player_games[request.sid].handle_kitty(request.sid, discarded_kitty, player_index)
+def kitty(discarded_kitty, player_data):
+    player_games[request.sid].handle_kitty(request.sid, discarded_kitty, player_data)
 
 @socketio.on("play")
 def play_card(card):

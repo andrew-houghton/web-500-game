@@ -41,20 +41,42 @@ function setupSocketHandlers(socket) {
         for (var i = 0; i < waitingPlayersListChildren.length; i++) {
             scores[i] = parseInt(waitingPlayersListChildren[i].children[0].value)
         }
-        socket.emit('lobby begin', scores);
+
+        try {
+            modeSelected = document.querySelector('input[name="partnerMode"]:checked').value;
+        } catch (err) {
+            return;
+        }
+
+        socket.emit('lobby begin', scores, modeSelected);
     };
+
     document.getElementById("kittyFinishedButton").onclick = function(event) {
+        partnerSelectionMode = document.getElementById("kittyCardSelection").hidden;
+
         selected_cards = document.querySelectorAll('img.cardPlayer0.selected');
         if (selected_cards.length != 3) { return; }
         discarded_kitty = Array.from(selected_cards).map(e => e.getAttribute("data"));
-        partner_cards = document.querySelectorAll('img.chosen');
-        if (partner_cards.length == 0) {
-            partner_index = 0;
+
+        if (partnerSelectionMode){
+            partner_cards = document.querySelectorAll('img.chosen');
+            if (partner_cards.length == 0) {
+                partner_data = 0;
+            } else {
+                partner_data = parseInt(partner_cards[0].getAttribute("data"));
+            }
         } else {
-            partner_index = parseInt(partner_cards[0].getAttribute("data"));
+            try {
+                suitSelected = document.querySelector('input[name="suit"]:checked').value;
+                numberSelected = document.querySelector('input[name="number"]:checked').value;
+            } catch (err) {
+                return;
+            }
+            partner_data = suitSelected + "_" + numberSelected
         }
+
         document.getElementById("kittyButtonControl").hidden = true;
-        socket.emit('kitty', discarded_kitty, partner_index);
+        socket.emit('kitty', discarded_kitty, partner_data);
     };
 
     socket.on('lobby waiting', (players, isOwner) => {
@@ -63,6 +85,7 @@ function setupSocketHandlers(socket) {
         waitingPlayersList = document.getElementById("waitingPlayersList")
         waitingPlayersList.innerHTML = '';
         if (isOwner && players.length == 5){
+            document.getElementById("gameSetupPartnerMode").hidden = false;
             document.getElementById("startGameButton").hidden = false;
         }
         for (let i = 0; i < players.length; i++) {
@@ -135,7 +158,8 @@ function setupSocketHandlers(socket) {
         document.getElementById("statusString").textContent = "Waiting for " + biddingPlayerName + " to bid";
     });
 
-    socket.on('kitty request', (playerHand, winningBid) => {
+    socket.on('kitty request', (playerHand, winningBid, partnerMode) => {
+        document.getElementById("kittyCardSelection").hidden = partnerMode == "select";
         document.getElementById("kittyButtonControl").hidden = false;
         images = drawHand(playerHand, 0);
 
@@ -151,15 +175,17 @@ function setupSocketHandlers(socket) {
         }
 
         // Allow selecting and delesecting opponents
-        for (let playerId = 1; playerId < 5; playerId++) {
-            document.querySelectorAll('img.cardPlayer' + playerId).forEach(e => e.addEventListener('click', function() {
-                if (document.querySelectorAll('img.cardPlayer' + playerId)[0].classList.contains("chosen")) {
-                    document.querySelectorAll('img.chosen').forEach(j => j.classList.remove("chosen"))
-                } else {
-                    document.querySelectorAll('img.chosen').forEach(j => j.classList.remove("chosen"))
-                    document.querySelectorAll('img.cardPlayer' + playerId).forEach(j => j.classList.add("chosen"))
-                }
-            }));
+        if (partnerMode == "select"){
+            for (let playerId = 1; playerId < 5; playerId++) {
+                document.querySelectorAll('img.cardPlayer' + playerId).forEach(e => e.addEventListener('click', function() {
+                    if (document.querySelectorAll('img.cardPlayer' + playerId)[0].classList.contains("chosen")) {
+                        document.querySelectorAll('img.chosen').forEach(j => j.classList.remove("chosen"))
+                    } else {
+                        document.querySelectorAll('img.chosen').forEach(j => j.classList.remove("chosen"))
+                        document.querySelectorAll('img.cardPlayer' + playerId).forEach(j => j.classList.add("chosen"))
+                    }
+                }));
+            }
         }
 
         document.getElementById("statusString").textContent = "Select partner and discard kitty";

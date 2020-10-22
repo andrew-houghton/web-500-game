@@ -1,6 +1,6 @@
 import os
 import random
-from game.card_list import card_list, all_bids
+from game.card_list import card_list, all_bids, pretty_card_str
 from collections import defaultdict
 from flask_socketio import emit
 from game.card_sorting import sort_card_list
@@ -25,6 +25,7 @@ class Game:
         self.lead_player = None
         self.tricks_won = None
         self.tricks_record = None
+        self.partner_mode = None
         self.points = defaultdict(int)
 
     def update_waiting_players(self):
@@ -90,6 +91,7 @@ class Game:
                     (
                         sort_card_list(self.kitty + self.hands[self.player_winning_bid], self.winning_bid[-1]),
                         all_bids[self.winning_bid]["name"],
+                        self.partner_mode,
                     ),
                     room=self.player_sids[i],
                 )
@@ -119,19 +121,31 @@ class Game:
                     self.send_bid_requests()
                     return
 
-    def handle_kitty(self, sid, discarded_kitty, partner_index):
+    def handle_kitty(self, sid, discarded_kitty, partner_data):
         assert len(discarded_kitty) == 3
-        self.partner_winning_bid = (self.player_winning_bid + partner_index) % 5
         self.hands[self.player_winning_bid] = list(
             set(self.hands[self.player_winning_bid] + self.kitty) - set(discarded_kitty)
         )
 
-        if partner_index == 0:
-            bidding_player_partner_string = f"{self.player_names[self.player_winning_bid]}"
+        if self.partner_mode == "card":
+            partner_card = partner_data
+            card_str = pretty_card_str(partner_data)
+            bidding_player_partner_string = f"{self.player_names[self.player_winning_bid]} and {card_str}"
+            for i in range(5):
+                if partner_card in self.hands[i]:
+                    self.partner_winning_bid = i
+                    break
+            if self.partner_winning_bid is None:  # Then player chose card in kitty
+                self.partner_winning_bid = self.player_winning_bid
         else:
-            bidding_player_partner_string = (
-                f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]}"
-            )
+            partner_index = partner_data
+            self.partner_winning_bid = (self.player_winning_bid + partner_index) % 5
+            if partner_index == 0:
+                bidding_player_partner_string = f"{self.player_names[self.player_winning_bid]}"
+            else:
+                bidding_player_partner_string = (
+                    f"{self.player_names[self.player_winning_bid]} and {self.player_names[self.partner_winning_bid]}"
+                )
 
         for i in range(5):
             self.hands[i] = sort_card_list(self.hands[i], self.winning_bid[-1])
@@ -144,7 +158,6 @@ class Game:
         self.send_play_request()
 
     def send_play_request(self):
-        print(self.points)
         for i in range(5):
             current_trick_cards = [self.trick_cards.get((i + j) % 5, "") for j in range(0, 5)]
             hand_sizes = [len(self.hands[(i + j) % 5]) for j in range(1, 5)]

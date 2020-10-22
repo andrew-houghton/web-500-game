@@ -25,6 +25,15 @@
             <h2 id="waitingGameHeading"></h2>
             <h3>Players waiting:</h3>
             <ul id="waitingPlayersList"></ul>
+            <span id="gameSetupPartnerMode" hidden>
+                <div><b>Partner Mode:</b></div>
+                <input type="radio" id="partnerModeCard" name="partnerMode" value="card">
+                <label for="partnerModeCard">Pick card</label>
+                <br>
+                <input type="radio" id="partnerModeSelect" name="partnerMode" value="select">
+                <label for="partnerModeSelect">Select</label>
+                <br>
+            </span>
             <button id="startGameButton" hidden>Start Game</button>
             <button id="leaveGameButton">Back</button>
         </div>
@@ -85,46 +94,46 @@
                     <br>
                     Suit:
                     <br>
-                    <input type="radio" id="input_suit" name="suit" value="hearts">
-                    <label for="hearts">Hearts</label>
-                    <input type="radio" id="input_suit" name="suit" value="diamonds">
-                    <label for="diamonds">Diamonds</label>
+                    <input type="radio" id="input_suit_heart" name="suit" value="heart">
+                    <label for="input_suit_heart">Hearts</label>
+                    <input type="radio" id="input_suit_diamond"  name="suit" value="diamond">
+                    <label for="input_suit_diamond">Diamonds</label>
                     <br>
-                    <input type="radio" id="input_suit" name="suit" value="clubs">
-                    <label for="clubs">Clubs</label>
-                    <input type="radio" id="input_suit" name="suit" value="spades">
-                    <label for="spades">Spades</label>
+                    <input type="radio" id="input_suit_club" name="suit" value="club">
+                    <label for="input_suit_club">Clubs</label>
+                    <input type="radio" id="input_suit_spade" name="suit" value="spade">
+                    <label for="input_suit_spade">Spades</label>
                     <br>
                     Number:
                     <br>
-                    <input type="radio" id="input_number" name="number" value="2">
-                    <label for="2">2</label>
-                    <input type="radio" id="input_number" name="number" value="3">
-                    <label for="3">3</label>
-                    <input type="radio" id="input_number" name="number" value="4">
-                    <label for="4">4</label>
-                    <input type="radio" id="input_number" name="number" value="5">
-                    <label for="5">5</label>
+                    <input type="radio" id="input_number_2"name="number" value="2">
+                    <label for="input_number_2">2</label>
+                    <input type="radio" id="input_number_3" name="number" value="3">
+                    <label for="input_number_3">3</label>
+                    <input type="radio" id="input_number_4" name="number" value="4">
+                    <label for="input_number_4">4</label>
+                    <input type="radio" id="input_number_5" name="number" value="5">
+                    <label for="input_number_5">5</label>
                     <br>
-                    <input type="radio" id="input_number" name="number" value="6">
-                    <label for="6">6</label>
-                    <input type="radio" id="input_number" name="number" value="7">
-                    <label for="7">7</label>
-                    <input type="radio" id="input_number" name="number" value="8">
-                    <label for="8">8</label>
-                    <input type="radio" id="input_number" name="number" value="9">
-                    <label for="9">9</label>
-                    <input type="radio" id="input_number" name="number" value="10">
-                    <label for="10">10</label>
+                    <input type="radio" id="input_number_6" name="number" value="6">
+                    <label for="input_number_6">6</label>
+                    <input type="radio" id="input_number_7" name="number" value="7">
+                    <label for="input_number_7">7</label>
+                    <input type="radio" id="input_number_8" name="number" value="8">
+                    <label for="input_number_8">8</label>
+                    <input type="radio" id="input_number_9" name="number" value="9">
+                    <label for="input_number_9">9</label>
+                    <input type="radio" id="input_number_10" name="number" value="10">
+                    <label for="input_number_10">10</label>
                     <br>
-                    <input type="radio" id="input_number" name="number" value="J">
-                    <label for="J">J</label>
-                    <input type="radio" id="input_number" name="number" value="Q">
-                    <label for="Q">Q</label>
-                    <input type="radio" id="input_number" name="number" value="K">
-                    <label for="K">K</label>
-                    <input type="radio" id="input_number" name="number" value="A">
-                    <label for="A">A</label>
+                    <input type="radio" id="input_number_jack" name="number" value="jack">
+                    <label for="input_number_jack">J</label>
+                    <input type="radio" id="input_number_queen" name="number" value="queen">
+                    <label for="input_number_queen">Q</label>
+                    <input type="radio" id="input_number_king" name="number" value="king">
+                    <label for="input_number_king">K</label>
+                    <input type="radio" id="input_number_ace" name="number" value="ace">
+                    <label for="input_number_ace">A</label>
                 </div>
                 <button id="kittyFinishedButton">Done</button>
             </div>
